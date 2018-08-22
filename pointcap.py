@@ -10,31 +10,30 @@ import accessDB as access
 
 # Run
 if __name__ == "__main__":
-    # User inputs
-    # username = input('Enter username: ')
-    # password = getpass.getpass('Enter password: ')
-    # date = input("Enter start date: ")
-    # pipeline_id = input("Enter pipeline id: ")
-    # point_name = input("Enter point name: ")
-    username = "deggerman"
-    password = "GS8j8gvh"
-    start_date = "07/01/2018"
-    pipeline_id = 396
-    point_names = ["Wagoner East"]
-    types = ["Scheduled", "Operational"]
-
     # Connect to DB
+    username = input('Enter username: ')
+    password = getpass.getpass('Enter password: ')
     connection = access.connect(username, password)
 
+    # Get start date, pipeline id, and point names
+    # start_date = input("Enter start date (MM/DD/YYYY): ")
+    start_date = "08/01/2018"
+    # pipeline_id = int(input("Enter pipeline id: "))
+    pipeline_id = 396
+    # point_names = input("Enter point names (comma separated): ").split(",")
+    point_names = ["ramapo AGT", "wagoner east"] # change ramapo
+    print(point_names)
     # Append to df_list
     df_list = []
     for p in point_names:
         loc_id = access.getLocationIDs(connection, p, pipeline_id)
+        print(loc_id)
         df = access.getCapacityData(connection, start_date, pipeline_id, loc_id)
         # Convert to MMcf/d
         df["scheduled_cap"] = df["scheduled_cap"].values / 1030
         df["operational_cap"] = df["operational_cap"].values / 1030
         df_list.append(df)
+        print(df)
 
     # Graph
 
@@ -44,6 +43,7 @@ if __name__ == "__main__":
     plt.title(title, fontsize=20)
     plt.ylabel("MMcf/d")
     plt.xticks(fontsize=8, rotation=90)
+    types = ["Scheduled", "Operational"] # ??
     # Get dates
     dates = df_list[0]["gas_day"].values  # ??
 
