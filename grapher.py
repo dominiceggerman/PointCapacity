@@ -1,4 +1,11 @@
 # By Dominic Eggerman
+# Imports
+import pandas as pd
+import numpy as np
+from dateutil import parser as dprs
+import matplotlib.pyplot as plt
+import getpass
+from optparse import OptionParser
 
 # Acquire data
 def acquire(path):
@@ -33,14 +40,6 @@ def sortData(df, pointName):
 
 # Run
 if __name__ == "__main__":
-    # Imports
-    import pandas as pd
-    import numpy as np
-    from dateutil import parser as dprs
-    import matplotlib.pyplot as plt
-    import getpass
-    from optparse import OptionParser
-
     # Parse arguements from command line
     parser = OptionParser()
     parser.add_option("--save", "-s", help="Use a saved set of points.")

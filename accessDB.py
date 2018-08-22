@@ -1,4 +1,8 @@
 # By Dominic Eggerman
+# Imports
+import getpass
+import psycopg2
+import pandas as pd
 
 # Connect to database
 def connect(usr, pswrd):
@@ -45,31 +49,21 @@ def getCapacityData(conn, start_date, pipe_id, location_id):
                     AND loc.pipeline_id = {1}
                     AND loc.id ILIKE {2}
                     ORDER BY eod.gas_day;
-    """.format(start_date, pipe_id, location_id)
+    """.format("'"+start_date+"'", pipe_id, location_id)
 
     # Read to dataframe and return
-    print("Querying database for opcap data...")
+    print("Querying database for pointcap data...")
     df = pd.read_sql(statement, conn)
     return df
 
 # Run
 if __name__ == "__main__":
-    # Imports
-    import getpass
-    import psycopg2
-    import pandas as pd
-
     # User entries
-    # username = input('Enter username: ')
-    # password = getpass.getpass('Enter password: ')
-    # date = input("Enter start date: ")
-    # pipeline_id = input("Enter pipeline id: ")
-    # point_name = input("Enter point name: ")
-    username = "deggerman"
-    password = "GS8j8gvh"
-    date = "'08/01/2018'"
-    pipeline_id = 396
-    point_name = "Wagoner East"
+    username = input('Enter username: ')
+    password = getpass.getpass('Enter password: ')
+    date = input("Enter start date: ")
+    pipeline_id = input("Enter pipeline id: ")
+    point_name = input("Enter point name: ")
 
     # Connect, query, and print df
     connection = connect(username, password)
