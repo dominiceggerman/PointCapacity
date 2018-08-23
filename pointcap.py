@@ -41,17 +41,19 @@ if __name__ == "__main__":
     point_names = input("Enter point names (comma separated): ").split(",")
     # Append to df_list
     df_list = []
-    for p in point_names:
-        loc_id = access.getLocationIDs(connection, p, pipeline_id)
+    for ind, p in enumerate(point_names):
+        # Get location id and true name
+        location_data = access.getLocationIDs(connection, p, pipeline_id)
+        loc_id, new_name = location_data[0], location_data[1]
+        point_names[ind] = new_name
+        # Get point capacity data
         df = access.getCapacityData(connection, start_date, pipeline_id, loc_id)
         # Check if point has receipts and deliveries
         df = checkDF(df)
         # Convert to MMcf/d
-        print(df)
         new_col = df["scheduled_cap"] / 1030
         df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
         df = df.assign(operational_cap = lambda x: x["operational_cap"] / 1030)
-        print(df)
         df_list.append(df)
 
     # Close connection

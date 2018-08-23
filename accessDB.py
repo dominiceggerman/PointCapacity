@@ -26,17 +26,18 @@ def getLocationIDs(conn, point, pipe_id):
     points = df["name"].values
     loc_ids = df["id"].values
 
-    # Decisions
+    # Decisions to return loc_id and name
     if len(points) == 0:
-        print("No points found matching that name.")
+        print("No points found matching that name...")
         return -1
     elif len(points) == 1:
-        return loc_ids[0]
+        return [loc_ids[0], points[0]]
     else:
+        # Select from multiple points
         point_select = ["{0}: {1}".format(ind+1,p) for ind, p in enumerate(points)]
         print(point_select)
         choice = int(input("Select a point from the list by entering the corresponding number: "))
-        return loc_ids[choice-1]
+        return [loc_ids[choice-1], points[choice-1]]
 
 # Query scheduled and operational caps for date range
 def getCapacityData(conn, start_date, pipe_id, location_id):
@@ -73,4 +74,4 @@ if __name__ == "__main__":
 
     # Close connection
     print("Closing connection to database...")
-    conn.close()
+    connection.close()
