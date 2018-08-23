@@ -47,17 +47,19 @@ if __name__ == "__main__":
         # Check if point has receipts and deliveries
         df = checkDF(df)
         # Convert to MMcf/d
-        df.update(df["scheduled_cap"].values / 1030)
-        df.update(df["operational_cap"].values / 1030)
-        df_list.append(df)
         print(df)
+        new_col = df["scheduled_cap"] / 1030
+        df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
+        df = df.assign(operational_cap = lambda x: x["operational_cap"] / 1030)
+        print(df)
+        df_list.append(df)
 
     # Close connection
     print("Closing connection to database...")
     connection.close()
 
     # Graph
-
+    print("Graphing points...")
     # Set title
     title = input("Graph title: ")
     # Set graph labels
