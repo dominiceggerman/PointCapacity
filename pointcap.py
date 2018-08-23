@@ -8,6 +8,26 @@ import matplotlib.pyplot as plt
 # Import pointcap modules
 import accessDB as access
 
+# Check df for receipt and delivery values
+def checkDF(dataframe):
+    # If adjecent dates are the same
+    if dataframe.iloc[0,0] == dataframe.iloc[1,0]:
+        # Make list of distinct dates
+        dates = dataframe["gas_day"].values[::2]
+        # Difference of scheduled cap
+        sched1 = dataframe["scheduled_cap"].values[::2]
+        sched2 = dataframe["scheduled_cap"].values[1::2]
+        scheduled = [max(i, j) - min(i, j) for i, j in zip(sched1, sched2)]
+        # Greater of either operational cap
+        op1 = dataframe["operational_cap"].values[::2]
+        op2 = dataframe["operational_cap"].values[1::2]
+        operational = [max(i, j) for i, j in zip(op1, op2)]
+        # Return filtered dataframe
+        return pd.DataFrame({"gas_day":dates, "scheduled_cap":scheduled, "operational_cap":operational})
+    else:
+        # Else return original dataframe
+        return dataframe
+
 # Run
 if __name__ == "__main__":
     # Connect to DB
@@ -16,24 +36,25 @@ if __name__ == "__main__":
     connection = access.connect(username, password)
 
     # Get start date, pipeline id, and point names
-    # start_date = input("Enter start date (MM/DD/YYYY): ")
-    start_date = "08/01/2018"
-    # pipeline_id = int(input("Enter pipeline id: "))
-    pipeline_id = 396
-    # point_names = input("Enter point names (comma separated): ").split(",")
-    point_names = ["ramapo AGT", "wagoner east"] # change ramapo
-    print(point_names)
+    start_date = input("Enter start date (MM/DD/YYYY): ")
+    pipeline_id = int(input("Enter pipeline id: "))
+    point_names = input("Enter point names (comma separated): ").split(",")
     # Append to df_list
     df_list = []
     for p in point_names:
         loc_id = access.getLocationIDs(connection, p, pipeline_id)
-        print(loc_id)
         df = access.getCapacityData(connection, start_date, pipeline_id, loc_id)
+        # Check if point has receipts and deliveries
+        df = checkDF(df)
         # Convert to MMcf/d
-        df["scheduled_cap"] = df["scheduled_cap"].values / 1030
-        df["operational_cap"] = df["operational_cap"].values / 1030
+        df.update(df["scheduled_cap"].values / 1030)
+        df.update(df["operational_cap"].values / 1030)
         df_list.append(df)
         print(df)
+
+    # Close connection
+    print("Closing connection to database...")
+    connection.close()
 
     # Graph
 

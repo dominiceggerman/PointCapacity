@@ -41,7 +41,7 @@ def getLocationIDs(conn, point, pipe_id):
 # Query scheduled and operational caps for date range
 def getCapacityData(conn, start_date, pipe_id, location_id):
     # Statement to select scheduled and operational caps for date range
-    statement = """SELECT eod.gas_day, eod.scheduled_cap, eod.operational_cap, loc.name
+    statement = """SELECT eod.gas_day, eod.scheduled_cap, eod.operational_cap
                     FROM analysts.location_role_eod_history_v AS eod
                     INNER JOIN maintenance.location_role AS lr ON eod.location_role_id = lr.id
                     INNER JOIN maintenance.location AS loc ON lr.location_id = loc.id
@@ -71,4 +71,6 @@ if __name__ == "__main__":
     df = getCapacityData(connection, date, pipeline_id, loc_id)
     print(df)
 
-    # Save loc_id and date range
+    # Close connection
+    print("Closing connection to database...")
+    conn.close()
