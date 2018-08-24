@@ -43,6 +43,36 @@ def checkDF(dataframe):
         # Else return original dataframe
         return dataframe
 
+# Plot
+def plotPoints(df_list):
+    # Set title
+    title = input("Graph title: ")
+    # Set graph labels
+    plt.title(title, fontsize=20)
+    plt.ylabel("MMcf/d")
+    plt.xticks(fontsize=8, rotation=90)
+    types = ["Scheduled", "Operational"] # ??
+    # Get dates
+    dates = df_list[0]["gas_day"].values  # ??
+
+    # Loop through dataframes and plot
+    ax = plt.axes()
+    for (ind, datafile) in enumerate(df_list):
+        ax.plot(dates, datafile.iloc[:,1:])  # plot data vs dates
+    # Set legend
+    ax.legend([point + " " + quant for point in point_names for quant in types], bbox_to_anchor=(1.05, 0.5), loc=2, borderaxespad=0)
+    
+    # Style gridlnes and xticks
+    ax.yaxis.grid(linestyle=":")
+    # for label in ax.xaxis.get_ticklabels()[1::2]:
+        # label.set_visible(False)
+    # ??
+
+    # Show plot
+    plt.tight_layout()
+    plt.show()
+    
+
 # Run
 if __name__ == "__main__":
     # Connect to DB
@@ -77,29 +107,4 @@ if __name__ == "__main__":
 
     # Graph
     print("Graphing points...")
-    # Set title
-    title = input("Graph title: ")
-    # Set graph labels
-    plt.title(title, fontsize=20)
-    plt.ylabel("MMcf/d")
-    plt.xticks(fontsize=8, rotation=90)
-    types = ["Scheduled", "Operational"] # ??
-    # Get dates
-    dates = df_list[0]["gas_day"].values  # ??
-
-    # Loop through dataframes and plot
-    ax = plt.axes()
-    for (ind, datafile) in enumerate(df_list):
-        ax.plot(dates, datafile.iloc[:,1:])  # plot data vs dates
-    # Set legend
-    ax.legend([point + " " + quant for point in point_names for quant in types])
-    
-    # Style gridlnes and xticks
-    ax.yaxis.grid(linestyle=":")
-    # for label in ax.xaxis.get_ticklabels()[1::2]:
-        # label.set_visible(False)
-    # ??
-
-    # Show plot
-    plt.tight_layout()
-    plt.show()
+    plotPoints(df_list)
