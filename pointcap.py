@@ -15,8 +15,12 @@ import getcreds
 # Get user input date range
 def getDateRange():
     # User inputs
-    start = input("Enter starting date (MM-DD-YYYY): ")
-    end = input("Enter end date (enter nothing for today): ")
+    start = input("Enter starting date (MM-DD-YYYY). Enter nothing to query the last 30 days: ")
+    if not start:
+        start = str((datetime.datetime.now() + datetime.timedelta(-30)).strftime("%m-%d-%Y"))
+        end = str(datetime.datetime.now().strftime("%m-%d-%Y"))
+    else:
+        end = input("Enter end date (enter nothing for today): ")
     # Troubleshoot (if end has no value)
     if not end:
         end = str(datetime.datetime.now().strftime("%m-%d-%Y"))  # date in mm/dd/yyyy
