@@ -1,13 +1,16 @@
 # By Dominic Eggerman
 # Imports
+import os
 import getpass
 import psycopg2
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime
+import argparse
 # Import pointcap modules
 import accessDB as access
+import getcreds
 
 # Get user input date range
 def getDateRange():
@@ -60,7 +63,7 @@ def plotPoints(df_list):
     for (ind, datafile) in enumerate(df_list):
         ax.plot(dates, datafile.iloc[:,1:])  # plot data vs dates
     # Set legend
-    ax.legend([point + " " + quant for point in point_names for quant in types], bbox_to_anchor=(1.05, 0.5), loc=2, borderaxespad=0)
+    ax.legend([point + " " + quant for point in point_names for quant in types], bbox_to_anchor=(0.5, 0), loc=1, borderaxespad=0)
     
     # Style gridlnes and xticks
     ax.yaxis.grid(linestyle=":")
@@ -75,11 +78,28 @@ def plotPoints(df_list):
 
 # Run
 if __name__ == "__main__":
-    # Connect to DB
-    username = input('Enter username: ')
-    password = getpass.getpass('Enter password: ')
+    # Argparse and add arguments
+    parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to Readme for full documentation and examples...")
+    parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_true")
+    parser.add_argument("-l", "--last", help="Use last query", action="store_true")
+    options = parser.parse_args()
+
+    # Get user creds
+    if os.path.exists("creds.txt") or options.creds:
+        credentials = getcreds.readCreds()
+        username, password = credentials[0], credentials[1]
+    else:
+        username = input('Enter username: ')
+        password = getpass.getpass('Enter password: ')
+
+    # Use last query
+    if options.last:
+        print("Using previous query...")
+    
+    # Connect 
     connection = access.connect(username, password)
 
+    # New user query
     # Get start date, pipeline id, and point names
     date_range = getDateRange()
     pipeline_id = int(input("Enter pipeline id: "))
