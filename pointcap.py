@@ -5,8 +5,23 @@ import psycopg2
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import datetime
 # Import pointcap modules
 import accessDB as access
+
+# Get user input date range
+def getDateRange():
+    # User inputs
+    start = input("Enter starting date (MM-DD-YYYY): ")
+    end = input("Enter end date (enter nothing for today): ")
+    # Troubleshoot (if end has no value)
+    if not end:
+        end = str(datetime.datetime.now().strftime("%m-%d-%Y"))  # date in mm/dd/yyyy
+    # Check date range
+    if datetime.datetime.strptime(start, "%m-%d-%Y") > datetime.datetime.strptime(end, "%m-%d-%Y"):
+        print("quit")
+    # Return
+    return [start, end]
 
 # Check df for receipt and delivery values
 def checkDF(dataframe):
@@ -36,9 +51,9 @@ if __name__ == "__main__":
     connection = access.connect(username, password)
 
     # Get start date, pipeline id, and point names
-    start_date = input("Enter start date (MM/DD/YYYY): ")
+    date_range = getDateRange()
     pipeline_id = int(input("Enter pipeline id: "))
-    point_names = input("Enter point names (comma separated): ").split(",")
+    point_names = input("Enter point name (multiple points should be comma separated): ").split(",")
     # Append to df_list
     df_list = []
     for ind, p in enumerate(point_names):
@@ -47,7 +62,7 @@ if __name__ == "__main__":
         loc_id, new_name = location_data[0], location_data[1]
         point_names[ind] = new_name
         # Get point capacity data
-        df = access.getCapacityData(connection, start_date, pipeline_id, loc_id)
+        df = access.getCapacityData(connection, date_range, pipeline_id, loc_id)
         # Check if point has receipts and deliveries
         df = checkDF(df)
         # Convert to MMcf/d
