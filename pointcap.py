@@ -93,44 +93,54 @@ if __name__ == "__main__":
         username = input('Enter username: ')
         password = getpass.getpass('Enter password: ')
 
-    # Connect 
-    connection = access.connect(username, password)
+    # Connect
+    try:
+        connection = access.connect(username, password)
 
-    # Get user query or use last query
-    if options.last:
-        last_query = readfile.readFile("query.txt")
-        if last_query[1] == "today":
-            last_query[1] = str(datetime.datetime.now().strftime("%m-%d-%Y"))
-        date_range = [last_query[0], last_query[1]]
-        pipeline_id = last_query[2]
-        point_names = last_query[3].split(",")
-    else:
-        # Get start date, pipeline id, and point names
-        date_range = getDateRange()
-        pipeline_id = int(input("Enter pipeline id: "))
-        point_names = input("Enter point name (multiple points should be comma separated): ").split(",")
+        # Get user query or use last query
+        if options.last:
+            last_query = readfile.readFile("query.txt")
+            if last_query[1] == "today":
+                last_query[1] = str(datetime.datetime.now().strftime("%m-%d-%Y"))
+            date_range = [last_query[0], last_query[1]]
+            pipeline_id = last_query[2]
+            point_names = last_query[3].split(",")
+        else:
+            # Get start date, pipeline id, and point names
+            date_range = getDateRange()
+            pipeline_id = int(input("Enter pipeline id: "))
+            point_names = input("Enter point name (multiple points should be comma separated): ").split(",")
+        
+        # Append to df_list
+        df_list = []
+        for ind, p in enumerate(point_names):
+            # Get location id and true name
+            location_data = access.getLocationIDs(connection, p, pipeline_id)
+            loc_id, new_name = location_data[0], location_data[1]
+            point_names[ind] = new_name
+            # Get point capacity data
+            df = access.getCapacityData(connection, date_range, pipeline_id, loc_id)
+            # Check if point has receipts and deliveries
+            df = checkDF(df)
+            # Convert to MMcf/d
+            new_col = df["scheduled_cap"] / 1030
+            df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
+            df = df.assign(operational_cap = lambda x: x["operational_cap"] / 1030)
+            df_list.append(df)
+
+        # Close connection
+        print("Closing connection to database...")
+        connection.close()
     
-    # Append to df_list
-    df_list = []
-    for ind, p in enumerate(point_names):
-        # Get location id and true name
-        location_data = access.getLocationIDs(connection, p, pipeline_id)
-        loc_id, new_name = location_data[0], location_data[1]
-        point_names[ind] = new_name
-        # Get point capacity data
-        df = access.getCapacityData(connection, date_range, pipeline_id, loc_id)
-        # Check if point has receipts and deliveries
-        df = checkDF(df)
-        # Convert to MMcf/d
-        new_col = df["scheduled_cap"] / 1030
-        df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
-        df = df.assign(operational_cap = lambda x: x["operational_cap"] / 1030)
-        df_list.append(df)
-
-    # Close connection
-    print("Closing connection to database...")
-    connection.close()
+    # Exception to handle errors
+    except (IndexError, ValueError, psycopg2.Error):
+        print("Error encountered during dataase operations, closing connection...")
+        connection.close()
 
     # Graph
-    print("Graphing points...")
-    plotPoints(df_list)
+    try:
+        print("Graphing points...")
+        plotPoints(df_list)
+    # Exception to handle errors
+    except:
+        print("Error encountered during graphing...")
