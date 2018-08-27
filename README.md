@@ -2,15 +2,27 @@
 
 ### Program that uses insightprodDB to graph noms for user-specified points
 *By Dominic Eggerman*\
+\
 `PointCapacity` is a program which will access Genscape's insightprod database and plot nominations for user-selected points.
 The program can be launched from command line with `python pointcap.py`.
 
 #### How To:
-The program can be launched from the command line with `python pointcap.py`.
-Entering `python pointcap.py -l` or `python pointcap.py --last` will parse the query stored in `query.txt`.  You can change the query in this .txt file, or use the user-prompts as the program runs.
+The program can be launched normally from the command line with `python pointcap.py`.
+Entering `python pointcap.py -l` or `python pointcap.py --last` will parse the query stored in `query.txt`.  You can change the query in this .txt file, or use the user-prompts as the program runs normally.
+Note that it is important to enter dates in MM-DD-YYYY (with dashes) format and not MM/DD/YYYY or other formats.
+Fast logins can be achieved by creating a `creds.txt` file in the following format:
+`username: XXXXX
+password: YYYYY`
 
-#### For entering a date range:
-#### For enetering multiple points:
+#### Using query.txt:
+Start date is coded as MM-DD-YYYY.
+End date can be a date, or "today", which will generate the current date.
+Pipeline ID is the id of a particular pipeline.
+Point names are the list of points / a point that you want to graph nominations for.  Multiple points can be comma separated: `point_names: wagoner east,wagoner west,ramapo AGT`
+The names will be search for using an ILIKE '%XXXXX%' SQL query, so entering "Wagoner", will search for locations with with strings that match that entry.  You can select one or multiple of the entries once the command has run.
+
+#### Using the inferface:
+Running `pointcap.py` from the command line will utilize user-input commands to build a query and graph nominations for certain points.  Without a `creds.txt` file, you will be prompted for login credentials.
 
 #### Saving a query:
 #### Saving your credentials for faster logins:
