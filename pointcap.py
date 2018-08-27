@@ -10,7 +10,7 @@ import datetime
 import argparse
 # Import pointcap modules
 import accessDB as access
-import getcreds
+import readfile
 
 # Get user input date range
 def getDateRange():
@@ -64,16 +64,13 @@ def plotPoints(df_list):
 
     # Loop through dataframes and plot
     ax = plt.axes()
-    for (ind, datafile) in enumerate(df_list):
+    for datafile in df_list:
         ax.plot(dates, datafile.iloc[:,1:])  # plot data vs dates
     # Set legend
     ax.legend([point + " " + quant for point in point_names for quant in types], bbox_to_anchor=(0.5, 0), loc=1, borderaxespad=0)
     
-    # Style gridlnes and xticks
+    # Style gridlnes
     ax.yaxis.grid(linestyle=":")
-    # for label in ax.xaxis.get_ticklabels()[1::2]:
-        # label.set_visible(False)
-    # ??
 
     # Show plot
     plt.tight_layout()
@@ -90,24 +87,29 @@ if __name__ == "__main__":
 
     # Get user creds
     if os.path.exists("creds.txt") or options.creds:
-        credentials = getcreds.readCreds()
+        credentials = readfile.readFile("creds.txt")
         username, password = credentials[0], credentials[1]
     else:
         username = input('Enter username: ')
         password = getpass.getpass('Enter password: ')
 
-    # Use last query
-    if options.last:
-        print("Using previous query...")
-    
     # Connect 
     connection = access.connect(username, password)
 
-    # New user query
-    # Get start date, pipeline id, and point names
-    date_range = getDateRange()
-    pipeline_id = int(input("Enter pipeline id: "))
-    point_names = input("Enter point name (multiple points should be comma separated): ").split(",")
+    # Get user query or use last query
+    if options.last:
+        last_query = readfile.readFile("query.txt")
+        if last_query[1] == "today":
+            last_query[1] = str(datetime.datetime.now().strftime("%m-%d-%Y"))
+        date_range = [last_query[0], last_query[1]]
+        pipeline_id = last_query[2]
+        point_names = last_query[3].split(",")
+    else:
+        # Get start date, pipeline id, and point names
+        date_range = getDateRange()
+        pipeline_id = int(input("Enter pipeline id: "))
+        point_names = input("Enter point name (multiple points should be comma separated): ").split(",")
+    
     # Append to df_list
     df_list = []
     for ind, p in enumerate(point_names):
