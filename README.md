@@ -17,15 +17,17 @@ password: YYYYY
 ```
 
 #### Using query.txt:
-Start date is coded as MM-DD-YYYY.\
-End date can be a date, or "today", which will generate the current date.\
-Pipeline ID is the id of a particular pipeline.\
-Point names are the list of points / a point that you want to graph nominations for.  Multiple points can be comma separated: `point_names: wagoner east,wagoner west,ramapo AGT`\
+*Start date is coded as MM-DD-YYYY.
+*End date can be a date, or "today", which will generate the current date.
+*Pipeline ID is the id of a particular pipeline.
+*Point names are the list of points / a point that you want to graph nominations for.  Multiple points can be comma separated: `point_names: wagoner east,wagoner west,ramapo AGT`
+
 The names will be search for using an ILIKE '%XXXXX%' SQL query, so entering "Wagoner", will search for locations with with strings that match that entry.  You can select one or multiple of the entries once the command has run.
 
 #### Using the inferface:
 Running `pointcap.py` from the command line will utilize user-input commands to build a query and graph nominations for certain points.  Without a `creds.txt` file, you will be prompted for login credentials.\
 
 #### Saving a query:
+When creating a new query, after the graphing window has been closed, a prompt will appear to save the query (dates, pipeline, points).  This will save to `query.txt` for later use. 
 
 #### Using `grapher.py`

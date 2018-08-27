@@ -1,4 +1,4 @@
-start_date: 08-01-2018
-end_date: today
+start_date: 07-28-2018
+end_date: 08-27-2018
 pipeline_id: 396
-point_names: wagoner east,wagoner west,ramapo AGT
+point_names: Wagoner East,RAMAPO AGT

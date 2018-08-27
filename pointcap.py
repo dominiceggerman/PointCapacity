@@ -133,7 +133,7 @@ if __name__ == "__main__":
         connection.close()
     
     # Exception to handle errors
-    except (IndexError, ValueError, psycopg2.Error):
+    except (IndexError, ValueError, TypeError, psycopg2.Error):
         print("Error encountered during dataase operations, closing connection...")
         connection.close()
 
@@ -144,3 +144,14 @@ if __name__ == "__main__":
     # Exception to handle errors
     except:
         print("Error encountered during graphing...")
+
+    # Save the query
+    save = input("Save this query (y/n): ")
+    if save == "y" or save == "yes":
+        if os.path.exists("query.txt"):
+            os.remove("query.txt")
+        with open("query.txt", mode="w") as savefile:
+            save_query = "start_date: {0}\nend_date: {1}\npipeline_id: {2}\npoint_names: {3}".format(date_range[0], date_range[1], pipeline_id, ",".join(point_names))
+            savefile.write(save_query)
+    else:
+        print("Discarding query...")
