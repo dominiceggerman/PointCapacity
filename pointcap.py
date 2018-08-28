@@ -66,8 +66,9 @@ def plotPoints(df_list):
     ax = plt.axes()
     for datafile in df_list:
         ax.plot(dates, datafile.iloc[:,1:])  # plot data vs dates
-    # Set legend
-    ax.legend([point + " " + quant for point in point_names for quant in types], bbox_to_anchor=(0.5, 0), loc=1, borderaxespad=0)
+    # Set legend and make it draggable
+    legend = ax.legend([point + " " + quant for point in point_names for quant in types], ncol=len(df_list), prop={"size":8})
+    legend.draggable()
     
     # Style gridlnes
     ax.yaxis.grid(linestyle=":")
