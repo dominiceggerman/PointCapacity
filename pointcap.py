@@ -110,6 +110,13 @@ if __name__ == "__main__":
             date_range = getDateRange()
             pipeline_id = int(input("Enter pipeline id: "))
             point_names = input("Enter point name (multiple points should be comma separated): ").split(",")
+
+        # If spaces exist between commas of user query
+        if len(point_names) > 1:
+            for ind, point in enumerate(point_names):
+                if point[0] == " ":
+                    # Remove leading space from point name string
+                    point_names[ind] = point[1:]
         
         # Append to df_list
         df_list = []
@@ -146,12 +153,13 @@ if __name__ == "__main__":
         print("Error encountered during graphing...")
 
     # Save the query
-    save = input("Save this query (y/n): ")
-    if save == "y" or save == "yes":
-        if os.path.exists("query.txt"):
-            os.remove("query.txt")
-        with open("query.txt", mode="w") as savefile:
-            save_query = "start_date: {0}\nend_date: {1}\npipeline_id: {2}\npoint_names: {3}".format(date_range[0], date_range[1], pipeline_id, ",".join(point_names))
-            savefile.write(save_query)
-    else:
-        print("Discarding query...")
+    if not options.last:
+        save = input("Save this query (y/n): ")
+        if save == "y" or save == "yes":
+            if os.path.exists("query.txt"):
+                os.remove("query.txt")
+            with open("query.txt", mode="w") as savefile:
+                save_query = "start_date: {0}\nend_date: {1}\npipeline_id: {2}\npoint_names: {3}".format(date_range[0], date_range[1], pipeline_id, ",".join(point_names))
+                savefile.write(save_query)
+        else:
+            print("Discarding query...")

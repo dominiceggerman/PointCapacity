@@ -16,11 +16,11 @@ username: XXXXX
 password: YYYYY
 ```
 
-#### Using query.txt:
-*Start date is coded as MM-DD-YYYY.
-*End date can be a date, or "today", which will generate the current date.
-*Pipeline ID is the id of a particular pipeline.
-*Point names are the list of points / a point that you want to graph nominations for.  Multiple points can be comma separated: `point_names: wagoner east,wagoner west,ramapo AGT`
+#### Using saved queries and query.txt:
+- Start date is coded as MM-DD-YYYY.
+- End date can be a date, or "today", which will generate the current date.
+- Pipeline ID is the id of a particular pipeline.
+- Point names are the list of points / a point that you want to graph nominations for.  Multiple points can be comma separated: `point_names: wagoner east,wagoner west,ramapo AGT`
 
 The names will be search for using an ILIKE '%XXXXX%' SQL query, so entering "Wagoner", will search for locations with with strings that match that entry.  You can select one or multiple of the entries once the command has run.
 
