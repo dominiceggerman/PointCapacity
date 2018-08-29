@@ -6,6 +6,8 @@ import psycopg2
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
+from matplotlib import font_manager
 import datetime
 import argparse
 # Import pointcap modules
@@ -52,26 +54,37 @@ def checkDF(dataframe):
 
 # Plot
 def plotPoints(df_list):
+    # Set font family
+    rcParams["font.family"] = "Calibri"
     # Set title
     title = input("Graph title: ")
-    # Set graph labels
-    plt.title(title, fontsize=20)
-    plt.ylabel("MMcf/d")
-    plt.xticks(fontsize=8, rotation=90)
+    # Set graph labels amd title
+    plt.title(title, fontsize=26)
+    plt.ylabel("MMcf/d", fontsize=12)
+    plt.xticks(fontsize=12, rotation=90)
+    plt.yticks(fontsize=12)
     types = ["Scheduled", "Operational"] # ??
     # Get dates
-    dates = df_list[0]["gas_day"].values  # ??
+    dates = [d.strftime("%m/%d/%Y") for d in df_list[0]["gas_day"].values]  # ??
 
     # Loop through dataframes and plot
     ax = plt.axes()
     for datafile in df_list:
         ax.plot(dates, datafile.iloc[:,1:])  # plot data vs dates
     # Set legend and make it draggable
-    legend = ax.legend([point + " " + quant for point in point_names for quant in types], ncol=len(df_list), prop={"size":8})
+    legend = ax.legend([point + " " + quant for point in point_names for quant in types], ncol=len(df_list), prop={"size":12})
     legend.draggable()
     
     # Style gridlnes
     ax.yaxis.grid(linestyle=":")
+
+    # Style spines and ticks
+    # ax.spines["top"].set_color("white")
+    # ax.spines["right"].set_color("white")
+    # ax.spines["bottom"].set_color((89, 89, 89))
+    # ax.spines["left"].set_color((89, 89, 89))
+    # ax.xaxis.label.set_color((89, 89, 89))
+    # ax.yaxis.label.set_color((89, 89, 89))
 
     # Show plot
     plt.tight_layout()
