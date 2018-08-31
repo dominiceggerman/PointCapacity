@@ -168,8 +168,8 @@ if __name__ == "__main__":
 
     # Save the query
     if not options.last:
-        save = input("Save this query (y/n): ")
-        if save == "y" or save == "yes":
+        save_query = input("Save this query (y/n): ")
+        if save_query == "y" or save_query == "yes":
             if os.path.exists("query.txt"):
                 os.remove("query.txt")
             with open("query.txt", mode="w") as savefile:
@@ -177,3 +177,19 @@ if __name__ == "__main__":
                 savefile.write(save_query)
         else:
             print("Discarding query...")
+
+    # Save the data (for Excel) ?? Better way to do this
+    save_data = input("Save data to csv (y/n): ")
+    if save_data == "y" or save_data == "yes":
+        save_name = input("File name.csv: ")
+        if save_name[-4:] != ".csv":
+            save_name = save_name + ".csv"
+        # Rename columns
+        for ind, (df, name) in enumerate(zip(df_list, point_names)):
+            name = name.replace(" ", "_")
+            df_list[ind] = df.rename(index=str, columns={"gas_day":"{0}_gas_day".format(name), "scheduled_cap":"{0}_scheduled".format(name), "operational_cap":"{}_operational".format(name)})
+        
+        # Concat dfs together and write to file
+        pd.concat([df for df in df_list], axis=1).to_csv("saved_data/{0}".format(save_name), index=False)
+
+        print("Data has been saved to saved_data/{0} in this folder...".format(save_name))
