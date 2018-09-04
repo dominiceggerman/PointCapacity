@@ -145,6 +145,9 @@ if __name__ == "__main__":
         for ind, p in enumerate(point_names):
             # Get location id and true name
             location_data = access.getLocationIDs(connection, p, pipeline_id)
+            # Raise error if returned no points
+            if location_data == -1:
+                raise(ValueError)
             loc_id, new_name = location_data[0], location_data[1]
             point_names[ind] = new_name
             # Get point capacity data
