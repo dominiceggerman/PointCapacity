@@ -53,7 +53,7 @@ def checkDF(dataframe):
         return dataframe
 
 # Plot
-def plotPoints(df_list):
+def plotPoints(df_list, opcap):
     # Set font family
     rcParams["font.family"] = "Calibri"
     # Set title
@@ -63,7 +63,14 @@ def plotPoints(df_list):
     plt.ylabel("MMcf/d", fontsize=12)
     plt.xticks(fontsize=12, rotation=90)
     plt.yticks(fontsize=12)
-    types = ["Scheduled", "Operational"] # ??
+    if not opcap:
+        types = ["Scheduled", "Operational"]
+    else:
+        types = ["Scheduled"]
+        # Remove opcap data
+        for ind, datafile in enumerate(df_list):
+            datafile = datafile.drop(["operational_cap"], axis=1)
+            df_list[ind] = datafile
     # Get dates
     dates = [d.strftime("%m/%d/%Y") for d in df_list[0]["gas_day"].values]  # ??
 
@@ -97,6 +104,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to Readme for full documentation and examples...")
     parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_true")
     parser.add_argument("-l", "--last", help="Use last query", action="store_true")
+    parser.add_argument("-o", "--opcap", help="Remove operational cap datapoints", action="store_true")
     options = parser.parse_args()
 
     # Get user creds
@@ -161,7 +169,7 @@ if __name__ == "__main__":
     # Graph
     try:
         print("Graphing points...")
-        plotPoints(df_list)
+        plotPoints(df_list, options.opcap)
     # Exception to handle errors
     except:
         print("Error encountered during graphing...")
