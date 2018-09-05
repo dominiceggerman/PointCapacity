@@ -1,4 +1,4 @@
-start_date: 07-29-2018
+start_date: 07-06-2018
 end_date: today
-pipeline_id: 396
-point_names: Wagoner East, Ramapo AGT
+pipeline_id: 274
+point_names: Oneok%Custer Co,EGG McClure,Hinton Field,Transok,Oneok Panter Creek,Thunderbird,Egogex Caddo,Markwest Buffalo,Superior Pipeline,Mistletoe to EGT,Beckham CTP,Elk City,Anthon Field,Markwest Arapaho,Weatherford Field

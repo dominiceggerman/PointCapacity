@@ -72,15 +72,16 @@ if __name__ == "__main__":
             df = df.assign(operational_cap = lambda x: x["operational_cap"] / 1030)
             # Get flow values
             day_diff = datetime.datetime.strptime(date_range[1], "%m-%d-%Y") - datetime.datetime.strptime(date_range[0], "%m-%d-%Y")  # Calculate date difference
-            flows = df["scheduled_cap"].values
+            flows = df["scheduled_cap"].values  # Flow data
+            opcap = max(abs(df["operational_cap"].values))  # Opcap data
             point_avg = round(np.average(flows), 2)  # Calculate average of scheduled flows
             point_median = round(np.median(flows), 2)  # Calculate median
             point_min, point_max = round(np.min(flows), 2), round(np.max(flows), 2)  # Calculate min and max
             q25, q75 = round(np.percentile(flows, 25), 2), round(np.percentile(flows, 75), 2)  # Calculate first and third quartile
             iqr = round(q75 - q25, 2)  # Calculate interquartile range
             # Append print statement to list
-            flow_list.append("Point name: {0} | Average {1}-day Flow: {2} | Median: {3} | Min Flow: {4} | Max Flow: {5} | First/Third Quartile: {6} / {7} | IQR: {8}"
-                            .format(new_name, day_diff.days, point_avg, point_median, point_min, point_max, q25, q75, iqr))
+            flow_list.append("Point name: {0} | Opcap Max: {1} | Average {2}-day Flow: {3} | Median: {4} | Min Flow: {5} | Max Flow: {6} | First/Third Quartile: {7} / {8} | IQR: {9}"
+                            .format(new_name, opcap, day_diff.days, point_avg, point_median, point_min, point_max, q25, q75, iqr))
 
         # Close connection
         print("Closing connection to database...")
