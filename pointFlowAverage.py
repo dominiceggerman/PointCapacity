@@ -21,7 +21,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to Readme for full documentation and examples...")
     parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_true")
     parser.add_argument("-l", "--last", help="Use last query", action="store_true")
-    parser.add_argument("-o", "--opcap", help="Remove operational cap datapoints", action="store_true")
     options = parser.parse_args()
 
     # Get user creds
@@ -58,6 +57,7 @@ if __name__ == "__main__":
                     point_names[ind] = point[1:]
         
         # Get point averages
+        flow_list = []
         for ind, p in enumerate(point_names):
             # Get location id and true name
             location_data = access.getLocationIDs(connection, p, pipeline_id)
@@ -74,12 +74,19 @@ if __name__ == "__main__":
             new_col = df["scheduled_cap"] / 1030
             df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
             df = df.assign(operational_cap = lambda x: x["operational_cap"] / 1030)
+            # Calculate average of scheduled flows and the date difference
             point_avg = np.average(df["scheduled_cap"].values)
-            print("Point name: {0}, Average Flow: {1} MMcf/d".format(new_name, point_avg))
+            day_diff = datetime.datetime.strptime(date_range[1], "%m-%d-%Y") - datetime.datetime.strptime(date_range[0], "%m-%d-%Y")
+            flow_list.append("Point name:   {0}   |   Average {1}-day Flow:   {2} MMcf/d".format(new_name, day_diff.days, round(point_avg, 2)))
 
         # Close connection
         print("Closing connection to database...")
         connection.close()
+
+        # Print flow list
+        print("\nCalculated Flows:")
+        for flow in flow_list:
+            print(flow)
     
     # Exception to handle errors
     except (IndexError, ValueError, TypeError, psycopg2.Error):
