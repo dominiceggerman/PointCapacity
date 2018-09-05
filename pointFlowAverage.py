@@ -10,11 +10,7 @@ import argparse
 # Import pointcap modules
 import pointCap
 import accessDB as access
-import readfile
-
-def xDayAvg():
-    pass
-    
+import readfile 
 
 # Run
 if __name__ == "__main__":
@@ -74,17 +70,24 @@ if __name__ == "__main__":
             new_col = df["scheduled_cap"] / 1030
             df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
             df = df.assign(operational_cap = lambda x: x["operational_cap"] / 1030)
-            # Calculate average of scheduled flows and the date difference
-            point_avg = np.average(df["scheduled_cap"].values)
-            day_diff = datetime.datetime.strptime(date_range[1], "%m-%d-%Y") - datetime.datetime.strptime(date_range[0], "%m-%d-%Y")
-            flow_list.append("Point name:   {0}   |   Average {1}-day Flow:   {2} MMcf/d".format(new_name, day_diff.days, round(point_avg, 2)))
+            # Get flow values
+            day_diff = datetime.datetime.strptime(date_range[1], "%m-%d-%Y") - datetime.datetime.strptime(date_range[0], "%m-%d-%Y")  # Calculate date difference
+            flows = df["scheduled_cap"].values
+            point_avg = round(np.average(flows), 2)  # Calculate average of scheduled flows
+            point_median = round(np.median(flows), 2)  # Calculate median
+            point_min, point_max = round(np.min(flows), 2), round(np.max(flows), 2)  # Calculate min and max
+            q25, q75 = round(np.percentile(flows, 25), 2), round(np.percentile(flows, 75), 2)  # Calculate first and third quartile
+            iqr = round(q75 - q25, 2)  # Calculate interquartile range
+            # Append print statement to list
+            flow_list.append("Point name: {0} | Average {1}-day Flow: {2} | Median: {3} | Min Flow: {4} | Max Flow: {5} | First/Third Quartile: {6} / {7} | IQR: {8}"
+                            .format(new_name, day_diff.days, point_avg, point_median, point_min, point_max, q25, q75, iqr))
 
         # Close connection
         print("Closing connection to database...")
         connection.close()
 
         # Print flow list
-        print("\nCalculated Flows:")
+        print("\nCalculated Flows (units are MMcf/d):")
         for flow in flow_list:
             print(flow)
     
