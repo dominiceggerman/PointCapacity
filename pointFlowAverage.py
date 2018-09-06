@@ -17,6 +17,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to Readme for full documentation and examples...")
     parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_true")
     parser.add_argument("-l", "--last", help="Use last query", action="store_true")
+    parser.add_argument("-f", "--mmcf", help="Transform to MMcf", action="store_true")
     options = parser.parse_args()
 
     # Get user creds
@@ -53,7 +54,7 @@ if __name__ == "__main__":
                     point_names[ind] = point[1:]
         
         # Get point averages
-        flow_list = []
+        point_list = []
         for ind, p in enumerate(point_names):
             # Get location id and true name
             location_data = access.getLocationIDs(connection, p, pipeline_id)
@@ -66,31 +67,31 @@ if __name__ == "__main__":
             df = access.getCapacityData(connection, date_range, pipeline_id, loc_id)
             # Check if point has receipts and deliveries
             df = pointCap.checkDF(df)
-            # Convert to MMcf/d
-            new_col = df["scheduled_cap"] / 1030
-            df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
-            df = df.assign(operational_cap = lambda x: x["operational_cap"] / 1030)
             # Get flow values
             day_diff = datetime.datetime.strptime(date_range[1], "%m-%d-%Y") - datetime.datetime.strptime(date_range[0], "%m-%d-%Y")  # Calculate date difference
             flows = df["scheduled_cap"].values  # Flow data
-            opcap = round(max(abs(df["operational_cap"].values)), 2)  # Opcap data
+            opcap = max(abs(df["operational_cap"].values))  # Opcap data
             point_avg = round(np.average(flows), 2)  # Calculate average of scheduled flows
-            point_median = round(np.median(flows), 2)  # Calculate median
-            point_min, point_max = round(np.min(flows), 2), round(np.max(flows), 2)  # Calculate min and max
-            q25, q75 = round(np.percentile(flows, 25), 2), round(np.percentile(flows, 75), 2)  # Calculate first and third quartile
-            iqr = round(q75 - q25, 2)  # Calculate interquartile range
+            point_median = np.median(flows)  # Calculate median
+            point_min, point_max = np.min(flows), np.max(flows)  # Calculate min and max
+            #q25, q75 = round(np.percentile(flows, 25), 2), round(np.percentile(flows, 75), 2)  # Calculate first and third quartile
+            #iqr = round(q75 - q25, 2)  # Calculate interquartile range
             # Append print statement to list
-            flow_list.append("Point name: {0} | Opcap Max: {1} | Average {2}-day Flow: {3} | Median: {4} | Min Flow: {5} | Max Flow: {6} | First/Third Quartile: {7} / {8} | IQR: {9}"
-                            .format(new_name, opcap, day_diff.days, point_avg, point_median, point_min, point_max, q25, q75, iqr))
+            point_list.append({"name":new_name, "day_diff":day_diff, "flow_avg":point_avg, "flow_median":point_median, "opcap":opcap, "flow_max":point_max, "flow_min":point_min})
 
         # Close connection
         print("Closing connection to database...")
         connection.close()
 
-        # Print flow list
+        # Print point_list
         print("\nCalculated Flows (units are MMcf/d):")
-        for flow in flow_list:
-            print(flow)
+        for p in point_list:
+            if options.mmcf:
+                print("Point name: {0} | Opcap Max: {1} | Average {2}-day Flow: {3} | Median: {4} | Min Flow: {5} | Max Flow: {6}"
+                .format(p["name"], p["opcap"]/1030, p["day_diff"].days, p["flow_avg"]/1030, p["flow_median"]/1030, p["flow_min"]/1030, p["flow_max"]/1030))
+            else:
+                print("Point name: {0} | Opcap Max: {1} | Average {2}-day Flow: {3} | Median: {4} | Min Flow: {5} | Max Flow: {6}"
+                .format(p["name"], p["opcap"], p["day_diff"].days, p["flow_avg"], p["flow_median"], p["flow_min"], p["flow_max"]))
     
     # Exception to handle errors
     except (IndexError, ValueError, TypeError, psycopg2.Error):
