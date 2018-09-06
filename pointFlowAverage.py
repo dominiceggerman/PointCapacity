@@ -73,7 +73,7 @@ if __name__ == "__main__":
             # Get flow values
             day_diff = datetime.datetime.strptime(date_range[1], "%m-%d-%Y") - datetime.datetime.strptime(date_range[0], "%m-%d-%Y")  # Calculate date difference
             flows = df["scheduled_cap"].values  # Flow data
-            opcap = max(abs(df["operational_cap"].values))  # Opcap data
+            opcap = round(max(abs(df["operational_cap"].values)), 2)  # Opcap data
             point_avg = round(np.average(flows), 2)  # Calculate average of scheduled flows
             point_median = round(np.median(flows), 2)  # Calculate median
             point_min, point_max = round(np.min(flows), 2), round(np.max(flows), 2)  # Calculate min and max
