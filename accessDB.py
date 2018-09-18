@@ -13,15 +13,24 @@ def connect(usr, pswrd):
 
 # Find location id's from names
 def getLocationIDs(conn, point, pipe_id):
-    # Create statement to select 
-    statement = """SELECT DISTINCT loc.name, loc.id
-                    FROM maintenance.location AS loc
-                    WHERE loc.name ILIKE {0}
-                    AND loc.pipeline_id = {1}
-                    ORDER BY loc.name;
-    """.format("'%"+point+"%'", pipe_id)
+    # Create statement to select
+    try:
+        statement = """SELECT DISTINCT loc.name, loc.id
+                        FROM maintenance.location AS loc
+                        WHERE loc.id ILIKE {0}
+                        AND loc.pipeline_id = {1}
+                        ORDER BY loc.name;
+        """.format(int(point), pipe_id)
+        print("Querying database for points matching id = {0}".format(point))
+    except ValueError:
+        statement = """SELECT DISTINCT loc.name, loc.id
+                        FROM maintenance.location AS loc
+                        WHERE loc.name ILIKE {0}
+                        AND loc.pipeline_id = {1}
+                        ORDER BY loc.name;
+        """.format("'%"+point+"%'", pipe_id)
+        print("Querying database for points matching name ILIKE '%{0}%'...".format(point))
     # Read to dataframe
-    print("Querying database for points matching name ILIKE '%{0}%'...".format(point))
     df = pd.read_sql(statement, conn)
     points = df["name"].values
     loc_ids = df["id"].values

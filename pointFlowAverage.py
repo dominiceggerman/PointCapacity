@@ -44,7 +44,7 @@ if __name__ == "__main__":
             # Get start date, pipeline id, and point names
             date_range = pointCap.getDateRange()
             pipeline_id = int(input("Enter pipeline id: "))
-            point_names = input("Enter point name (multiple points should be comma separated): ").split(",")
+            point_names = input("Enter point name or location id (multiple points should be comma separated): ").split(",")
 
         # If spaces exist between commas of user query
         if len(point_names) > 1:
@@ -94,6 +94,6 @@ if __name__ == "__main__":
                 .format(p["name"], p["opcap"], p["day_diff"].days, p["flow_avg"], p["flow_median"], p["flow_min"], p["flow_max"]))
     
     # Exception to handle errors
-    except (IndexError, ValueError, TypeError, psycopg2.Error):
+    except (IndexError, TypeError, psycopg2.Error):
         print("Error encountered during dataase operations, closing connection...")
         connection.close()

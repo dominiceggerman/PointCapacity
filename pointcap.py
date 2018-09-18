@@ -131,7 +131,7 @@ if __name__ == "__main__":
             # Get start date, pipeline id, and point names
             date_range = getDateRange()
             pipeline_id = int(input("Enter pipeline id: "))
-            point_names = input("Enter point name (multiple points should be comma separated): ").split(",")
+            point_names = input("Enter point name or location id (multiple points should be comma separated): ").split(",")
 
         # If spaces exist between commas of user query
         if len(point_names) > 1:
@@ -147,7 +147,7 @@ if __name__ == "__main__":
             location_data = access.getLocationIDs(connection, p, pipeline_id)
             # Raise error if returned no points
             if location_data == -1:
-                raise(ValueError)
+                raise(psycopg2.Error)
             loc_id, new_name = location_data[0], location_data[1]
             point_names[ind] = new_name
             # Get point capacity data
@@ -165,7 +165,7 @@ if __name__ == "__main__":
         connection.close()
     
     # Exception to handle errors
-    except (IndexError, ValueError, TypeError, psycopg2.Error):
+    except (IndexError, TypeError, KeyboardInterrupt, psycopg2.Error):
         print("Error encountered during dataase operations, closing connection...")
         connection.close()
 
