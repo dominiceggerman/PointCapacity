@@ -56,11 +56,21 @@ if __name__ == "__main__":
         # Get point averages
         point_list = []
         for ind, p in enumerate(point_names):
+            # Set marker for multiple points
+            another_point = True
             # Get location id and true name
             location_data = access.getLocationIDs(connection, p, pipeline_id)
+            while another_point:
+                # Get location id and true name
+                location_data = access.getLocationIDs(connection, p, pipeline_id)
+                # Ask user if he/she wants to pick another point from the query
+                more_points = input("Want to add another point from this list? (y/n): ")
+                if more_points not in ["y", "yes"]:
+                    another_point = False
+
             # Raise error if returned no points
             if location_data == -1:
-                raise(ValueError)
+                raise(psycopg2.Error)
             loc_id, new_name = location_data[0], location_data[1]
             point_names[ind] = new_name
             # Get point capacity data
@@ -94,6 +104,6 @@ if __name__ == "__main__":
                 .format(p["name"], p["opcap"], p["day_diff"].days, p["flow_avg"], p["flow_median"], p["flow_min"], p["flow_max"]))
     
     # Exception to handle errors
-    except (IndexError, TypeError, psycopg2.Error):
+    except (IndexError, TypeError, KeyboardInterrupt, psycopg2.Error):
         print("Error encountered during dataase operations, closing connection...")
         connection.close()
