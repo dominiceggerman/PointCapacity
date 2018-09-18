@@ -8,13 +8,19 @@ The program can be launched from command line with `python pointcap.py`.
 
 #### How To:
 The program can be launched normally from the command line with `python pointCap.py`.\
-Entering `python pointCap.py -l` or `python pointCap.py --last` will parse the query stored in `query.txt`.  You can change the query in this .txt file, or use the user-prompts as the program runs normally.\
 Note that it is important to enter dates in MM-DD-YYYY (with dashes) format and not MM/DD/YYYY or other formats.\
 Fast logins can be achieved by creating a `creds.txt` file in the following format:\
 ```
 username: XXXXX
 password: YYYYY
 ```
+Optional command-line arguments:
+| Short Option | Alt Option | Description | Default |
+|---|---|---|---|
+| `-c` | `--creds` | Uses the login credentials stored in `creds.txt` | True |
+| `-l` | `--last` | Uses the last query stored in `query.txt` | False |
+| `-o` | `--opcap` | Does not graph the operational capacity of a point | False |
+| `-s` | `--save` | Saves the data used to graph into a .csv file | False |
 
 #### Using saved queries and query.txt:
 - Start date is coded as MM-DD-YYYY.

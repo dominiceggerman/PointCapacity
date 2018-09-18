@@ -98,11 +98,12 @@ def plotPoints(df_list, opcap):
 if __name__ == "__main__":
     # Argparse and add arguments
     parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to Readme for full documentation and examples...")
-    parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_true")
+    parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_false")
     parser.add_argument("-l", "--last", help="Use last query", action="store_true")
     parser.add_argument("-o", "--opcap", help="Remove operational cap datapoints", action="store_true")
     parser.add_argument("-s", "--save", help="Save data to csv", action="store_true")
     options = parser.parse_args()
+    print(options)
 
     # Get user creds
     if os.path.exists("creds.txt") or options.creds:
