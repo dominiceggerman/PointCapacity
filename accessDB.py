@@ -15,12 +15,13 @@ def connect(usr, pswrd):
 def getLocationIDs(conn, point, pipe_id):
     # Create statement to select
     try:
+        point = int(point)
         statement = """SELECT DISTINCT loc.name, loc.id
                         FROM maintenance.location AS loc
                         WHERE loc.id ILIKE {0}
                         AND loc.pipeline_id = {1}
                         ORDER BY loc.name;
-        """.format(int(point), pipe_id)
+        """.format(point, pipe_id)
         print("Querying database for points matching id = {0}".format(point))
     except ValueError:
         statement = """SELECT DISTINCT loc.name, loc.id

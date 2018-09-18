@@ -143,9 +143,17 @@ if __name__ == "__main__":
         # Append to df_list
         df_list = []
         for ind, p in enumerate(point_names):
-            # Get location id and true name
-            location_data = access.getLocationIDs(connection, p, pipeline_id)
-            # Raise error if returned no points
+            # Set marker for multiple points
+            another_point = True
+            while another_point:
+                # Get location id and true name
+                location_data = access.getLocationIDs(connection, p, pipeline_id)
+                # Ask user if he/she wants to pick another point from the query
+                more_points = input("Want to add another point from this list? (y/n): ")
+                if more_points not in ["y", "yes"]:
+                    another_point = False
+            
+            # Raise error if no points are returned
             if location_data == -1:
                 raise(psycopg2.Error)
             loc_id, new_name = location_data[0], location_data[1]
@@ -203,4 +211,7 @@ if __name__ == "__main__":
         # Concat dfs together and write to file
         pd.concat([df for df in df_list], axis=1).to_csv("saved_data/{0}".format(save_name), index=False)
 
-        print("Data has been saved to saved_data/{0} in this folder...".format(save_name))
+        print("Data has been saved to saved_data/{0} in the current folder...".format(save_name))
+    
+    else:
+        print("Data discarded...")
