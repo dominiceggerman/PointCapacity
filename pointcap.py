@@ -86,12 +86,8 @@ def plotPoints(df_list, opcap):
     ax.yaxis.grid(linestyle=":")
 
     # Style spines and ticks
-    # ax.spines["top"].set_color("white")
-    # ax.spines["right"].set_color("white")
-    # ax.spines["bottom"].set_color((89, 89, 89))
-    # ax.spines["left"].set_color((89, 89, 89))
-    # ax.xaxis.label.set_color((89, 89, 89))
-    # ax.yaxis.label.set_color((89, 89, 89))
+    ax.spines["top"].set_color("white")
+    ax.spines["right"].set_color("white")
 
     # Show plot
     plt.tight_layout()
@@ -105,6 +101,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_true")
     parser.add_argument("-l", "--last", help="Use last query", action="store_true")
     parser.add_argument("-o", "--opcap", help="Remove operational cap datapoints", action="store_true")
+    parser.add_argument("-s", "--save", help="Save data to csv", action="store_true")
     options = parser.parse_args()
 
     # Get user creds
@@ -169,7 +166,7 @@ if __name__ == "__main__":
             df_list.append(df)
 
         # Close connection
-        print("Closing connection to database...")
+        print("Closing connection to database...\n")
         connection.close()
     
     # Exception to handle errors
@@ -199,7 +196,7 @@ if __name__ == "__main__":
 
     # Save the data (for Excel) ?? Better way to do this
     save_data = input("Save data to csv (y/n): ")
-    if save_data == "y" or save_data == "yes":
+    if save_data == "y" or save_data == "yes" or options.save:
         save_name = input("File name.csv: ")
         if save_name[-4:] != ".csv":
             save_name = save_name + ".csv"
