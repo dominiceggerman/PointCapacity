@@ -61,8 +61,8 @@ def checkDF(dataframe):
         # Return filtered dataframe
         return pd.DataFrame({"gas_day":dates, "scheduled_cap":scheduled, "operational_cap":operational})
     else:
-        # Else return original dataframe
-        return dataframe
+        # Else return dataframe with no role id
+        return dataframe.drop(columns="role_id")
 
 # Plot
 def plotPoints(df_list, opcap):

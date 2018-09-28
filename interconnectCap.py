@@ -54,37 +54,34 @@ if __name__ == "__main__":
             new_col = df["scheduled_cap"] / 1030
             df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
             df = df.drop(columns=["operational_cap"])  # Drop opcap
-            if max(df["scheduled_cap"].values) == 0 or np.average(df["scheduled_cap"].values) < 80:
+            if max(df["scheduled_cap"].values) == 0:
+                continue
+            elif (np.average(df["scheduled_cap"].values) <= 80 or np.average(df["scheduled_cap"].values) >= -80) and abs(max(df["scheduled_cap"].values)) < 100:
                 continue
             else:
                 df_list.append(df)
 
         # Exception to handle errors
         except (IndexError, TypeError, KeyboardInterrupt, psycopg2.Error):
-            print("Error encountered when querying for point, passing...")
+            print("<<Error encountered when querying for point, passing>>")
 
     # Close connection
     print("Closing connection to database...\n")
     connection.close()
 
     # Save the data (for Excel) ?? Better way to do this
-    save_data = input("Save data to csv (y/n): ")
-    if save_data == "y" or save_data == "yes" or options.save:
-        save_name = input("Name the file (file_name.csv): ")
-        if save_name[-4:] != ".csv":
-            save_name = save_name + ".csv"
-        # Get all data to master df
-        for ind, (df, name) in enumerate(zip(df_list, new_names)):
-            if ind == 0:
-                df_list[ind] = df.rename(index=str, columns={"gas_day":"Gas Day", "scheduled_cap":"{0} Scheduled".format(name)})
-            else:
-                df_list[ind] = df.drop(columns=["gas_day"])
-                df_list[ind] = df_list[ind].rename(index=str, columns={"scheduled_cap":"{0} Scheduled".format(name)})
-        
-        # Concat dfs together and write to file
-        pd.concat([df for df in df_list], axis=1).to_csv("saved_data/{0}".format(save_name), index=False)
-
-        print("Data has been saved to saved_data/{0} in the current folder...".format(save_name))
+    save_name = input("Name the file to save to (Example: file_name.csv): ")
+    if save_name[-4:] != ".csv":
+        save_name = save_name + ".csv"
+    # Get all data to master df
+    for ind, (df, name) in enumerate(zip(df_list, new_names)):
+        if ind == 0:
+            df_list[ind] = df.rename(index=str, columns={"gas_day":"Gas Day", "scheduled_cap":"{0} Scheduled".format(name)})
+        else:
+            df_list[ind] = df.drop(columns=["gas_day"])
+            df_list[ind] = df_list[ind].rename(index=str, columns={"scheduled_cap":"{0} Scheduled".format(name)})
     
-    else:
-        print("Data discarded...")
+    # Concat dfs together and write to file
+    pd.concat([df for df in df_list], axis=1).to_csv("saved_data/{0}".format(save_name), index=False)
+
+    print("Data has been saved to saved_data/{0} in the current folder...".format(save_name))
