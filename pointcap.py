@@ -200,10 +200,13 @@ if __name__ == "__main__":
         save_name = input("Name the file (file_name.csv): ")
         if save_name[-4:] != ".csv":
             save_name = save_name + ".csv"
-        # Rename columns
-        for ind, (df, name) in enumerate(zip(df_list, point_names)):
-            name = name.replace(" ", "_")
-            df_list[ind] = df.rename(index=str, columns={"gas_day":"{0}_gas_day".format(name), "scheduled_cap":"{0}_scheduled".format(name), "operational_cap":"{}_operational".format(name)})
+        # Get all data to master df
+        for ind, (df, name) in enumerate(zip(df_list, new_names)):
+            if ind == 0:
+                df_list[ind] = df.rename(index=str, columns={"gas_day":"Gas Day", "scheduled_cap":"{0} Scheduled".format(name)})
+            else:
+                df_list[ind] = df.drop(columns=["gas_day"])
+                df_list[ind] = df_list[ind].rename(index=str, columns={"scheduled_cap":"{0} Scheduled".format(name)})
         
         # Concat dfs together and write to file
         pd.concat([df for df in df_list], axis=1).to_csv("saved_data/{0}".format(save_name), index=False)

@@ -59,7 +59,7 @@ def getInterconnectIDs(conn, pipe_id):
                     AND loc.pipeline_id = {0}
                     ORDER BY loc.name;
                 """.format(pipe_id)
-    print("Querying database for interconnects on pipe_id:{0}...".format(pipe_id))
+    print("Querying database for interconnects on pipe_id: {0}...".format(pipe_id))
     # Read to dataframe
     df = pd.read_sql(statement, conn)
     points = df["name"].values
