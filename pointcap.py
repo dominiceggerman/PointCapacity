@@ -38,14 +38,26 @@ def checkDF(dataframe):
     if dataframe.iloc[0,0] == dataframe.iloc[1,0]:
         # Make list of distinct dates
         dates = dataframe["gas_day"].values[::2]
-        # Difference of scheduled cap
+        # Difference of scheduled cap (receipts - deliveries)
         sched1 = dataframe["scheduled_cap"].values[::2]
         sched2 = dataframe["scheduled_cap"].values[1::2]
-        scheduled = [max(i, j) - min(i, j) for i, j in zip(sched1, sched2)]
-        # Greater of either operational cap
+        scheduled = [i - abs(j) for i, j in zip(sched1, sched2)]
+        # Create operational cap
         op1 = dataframe["operational_cap"].values[::2]
         op2 = dataframe["operational_cap"].values[1::2]
-        operational = [max(i, j) for i, j in zip(op1, op2)]
+        operational = []
+        # For loop to check if opcap is negative in value
+        for ind, (i, j) in enumerate(zip(op1, op2)):
+            if i == 0 and j == 0:
+                # In case of opcap actually equalling zero
+                operational.append(0)
+            if scheduled[ind] > 0:
+                operational.append(i)
+            elif scheduled[ind] < 0:
+                operational.append(j * -1)
+            else:
+                # Else use last opcap value
+                operational.append(operational[ind-1])
         # Return filtered dataframe
         return pd.DataFrame({"gas_day":dates, "scheduled_cap":scheduled, "operational_cap":operational})
     else:
@@ -158,7 +170,9 @@ if __name__ == "__main__":
             # Get point capacity data
             df = access.getCapacityData(connection, date_range, pipeline_id, loc_id)
             # Check if point has receipts and deliveries
+            print(df)
             df = checkDF(df)
+            print(df)
             # Convert to MMcf/d
             new_col = df["scheduled_cap"] / 1030
             df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
@@ -201,7 +215,7 @@ if __name__ == "__main__":
         if save_name[-4:] != ".csv":
             save_name = save_name + ".csv"
         # Get all data to master df
-        for ind, (df, name) in enumerate(zip(df_list, new_names)):
+        for ind, (df, name) in enumerate(zip(df_list, point_names)):
             if ind == 0:
                 df_list[ind] = df.rename(index=str, columns={"gas_day":"Gas Day", "scheduled_cap":"{0} Scheduled".format(name)})
             else:
