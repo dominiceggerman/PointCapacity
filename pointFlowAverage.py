@@ -17,7 +17,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to Readme for full documentation and examples...")
     parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_true")
     parser.add_argument("-l", "--last", help="Use last query", action="store_true")
-    parser.add_argument("-f", "--mmcf", help="Transform to MMcf", action="store_true")
+    parser.add_argument("-mm", "--mmcf", help="Transform to MMcf", action="store_true")
     options = parser.parse_args()
 
     # Get user creds
@@ -94,12 +94,13 @@ if __name__ == "__main__":
         connection.close()
 
         # Print point_list
-        print("\nCalculated Flows (units are MMcf/d):")
         for p in point_list:
             if options.mmcf:
+                print("\nCalculated Flows (MMcf/d):")
                 print("Point name: {0} | Opcap Max: {1} | Average {2}-day Flow: {3} | Median: {4} | Min Flow: {5} | Max Flow: {6}"
                 .format(p["name"], p["opcap"]/1030, p["day_diff"].days, p["flow_avg"]/1030, p["flow_median"]/1030, p["flow_min"]/1030, p["flow_max"]/1030))
             else:
+                print("\nCalculated Flows (MMbtu/d):")
                 print("Point name: {0} | Opcap Max: {1} | Average {2}-day Flow: {3} | Median: {4} | Min Flow: {5} | Max Flow: {6}"
                 .format(p["name"], p["opcap"], p["day_diff"].days, p["flow_avg"], p["flow_median"], p["flow_min"], p["flow_max"]))
     

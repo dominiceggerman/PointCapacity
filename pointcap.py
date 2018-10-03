@@ -170,9 +170,7 @@ if __name__ == "__main__":
             # Get point capacity data
             df = access.getCapacityData(connection, date_range, pipeline_id, loc_id)
             # Check if point has receipts and deliveries
-            print(df)
             df = checkDF(df)
-            print(df)
             # Convert to MMcf/d
             new_col = df["scheduled_cap"] / 1030
             df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
