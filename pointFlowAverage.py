@@ -59,13 +59,15 @@ if __name__ == "__main__":
             # Set marker for multiple points
             another_point = True
             # Get location id and true name
-            location_data = access.getLocationIDs(connection, p, pipeline_id)
             while another_point:
                 # Get location id and true name
                 location_data = access.getLocationIDs(connection, p, pipeline_id)
-                # Ask user if he/she wants to pick another point from the query
-                more_points = input("Want to add another point from this list? (y/n): ")
-                if more_points not in ["y", "yes"]:
+                if location_data[2] is True:
+                    # Ask user if he/she wants to pick another point from the query
+                    more_points = input("Want to add another point from this list? (y/n): ")
+                    if more_points not in ["y", "yes"]:
+                        another_point = False
+                else:
                     another_point = False
 
             # Raise error if returned no points
