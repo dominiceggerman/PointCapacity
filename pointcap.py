@@ -157,13 +157,17 @@ if __name__ == "__main__":
             while another_point:
                 # Get location id and true name
                 location_data = access.getLocationIDs(connection, p, pipeline_id)
-                # Ask user if he/she wants to pick another point from the query
-                more_points = input("Want to add another point from this list? (y/n): ")
-                if more_points not in ["y", "yes"]:
+                if location_data[2] is True:
+                    # Ask user if he/she wants to pick another point from the query
+                    more_points = input("Want to add another point from this list? (y/n): ")
+                    if more_points not in ["y", "yes"]:
+                        another_point = False
+                else:
                     another_point = False
             
             # Raise error if no points are returned
-            if location_data == -1:
+            if None in location_data:
+                print("Could not find that point in the database...")
                 raise(psycopg2.Error)
             loc_id, new_name = location_data[0], location_data[1]
             point_names[ind] = new_name
@@ -183,7 +187,7 @@ if __name__ == "__main__":
     
     # Exception to handle errors
     except (IndexError, TypeError, KeyboardInterrupt, psycopg2.Error):
-        print("Error encountered during dataase operations, closing connection...")
+        print("Error encountered during database operations, closing connection...")
         connection.close()
 
     # Graph

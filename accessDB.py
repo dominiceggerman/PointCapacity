@@ -39,15 +39,15 @@ def getLocationIDs(conn, point, pipe_id):
     # Decisions to return loc_id and name
     if len(points) == 0:
         print("No points found matching that name...")
-        return -1
+        return [None, None, None]
     elif len(points) == 1:
-        return [loc_ids[0], points[0]]
+        return [loc_ids[0], points[0], False]
     else:
         # Select from multiple points
         point_select = ["{0}: {1}".format(ind+1,p) for ind, p in enumerate(points)]
         print(point_select)
         choice = int(input("Select a point from the list by entering the corresponding number: "))
-        return [loc_ids[choice-1], points[choice-1]]
+        return [loc_ids[choice-1], points[choice-1], True]
 
 
 # Get location ID's of interconnects to other pipes
