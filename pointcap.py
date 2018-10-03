@@ -113,7 +113,6 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_false")
     parser.add_argument("-l", "--last", help="Use last query", action="store_true")
     parser.add_argument("-o", "--opcap", help="Remove operational cap datapoints", action="store_true")
-    parser.add_argument("-s", "--save", help="Save data to csv", action="store_true")
     options = parser.parse_args()
 
     # Get user creds
@@ -212,7 +211,7 @@ if __name__ == "__main__":
 
     # Save the data (for Excel) ?? Better way to do this
     save_data = input("Save data to csv (y/n): ")
-    if save_data == "y" or save_data == "yes" or options.save:
+    if save_data == "y" or save_data == "yes":
         save_name = input("Name the file (file_name.csv): ")
         if save_name[-4:] != ".csv":
             save_name = save_name + ".csv"
