@@ -71,10 +71,10 @@ def plotPoints(df_list, opcap):
     # Set title
     title = input("Graph title: ")
     # Set graph labels amd title
-    plt.title(title, fontsize=26)
-    plt.ylabel("MMcf/d", fontsize=12)
-    plt.xticks(fontsize=12, rotation=90)
-    plt.yticks(fontsize=12)
+    plt.title(title, fontsize=24, color="#595959")
+    plt.ylabel("MMcf/d", fontsize=12, color="#595959")
+    plt.xticks(fontsize=12, rotation=90, color="#595959")
+    plt.yticks(fontsize=12, color="#595959")
     if not opcap:
         types = ["Scheduled", "Operational"]
     else:
@@ -90,9 +90,10 @@ def plotPoints(df_list, opcap):
     ax = plt.axes()
     for datafile in df_list:
         ax.plot(dates, datafile.iloc[:,1:])  # plot data vs dates
-    # Set legend and make it draggable
-    legend = ax.legend([point + " " + quant for point in point_names for quant in types], ncol=len(df_list), prop={"size":12})
+    # Set legend, make it draggable, set color
+    legend = plt.legend([point + " " + quant for point in point_names for quant in types], ncol=2, prop={"size":12}, frameon=False)
     legend.draggable()
+    plt.setp([text for text in legend.get_texts()], color="#595959")
     
     # Style gridlnes
     ax.yaxis.grid(linestyle=":")
@@ -100,6 +101,8 @@ def plotPoints(df_list, opcap):
     # Style spines and ticks
     ax.spines["top"].set_color("white")
     ax.spines["right"].set_color("white")
+    ax.spines["bottom"].set_color("#595959")
+    ax.spines["left"].set_color("#595959")
 
     # Show plot
     plt.tight_layout()
