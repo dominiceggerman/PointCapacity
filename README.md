@@ -31,7 +31,7 @@ Example use: `python pointCap.py -l -o`.  This will use the query stored in `que
 |---|---|---|---|
 | `-c` | `--creds` | Uses the login credentials stored in `creds.txt` | True |
 | `-l` | `--last` | Uses the last query stored in `query.txt` | False |
-| `-mm` | `--mmcf` | Displays data in units of MMcf rather than MMbtu | False |
+| `-cf` | `--mmcf` | Displays data in units of MMcf rather than MMbtu | False |
 
 #### How To - `interconnectCap`:
 `interconnectCap` uses a range of dates and a pipeline id to obtain all of the nominations for intrastate and interstate interconnects on a pipeline.  It will then save the data to a csv for viewing.  The filters for average/max flow over period can be changed as well.
