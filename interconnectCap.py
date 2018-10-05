@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import datetime
 import argparse
-# Import pointcap modules
+# Import PointCap modules
 import pointCap
 import accessDB as access
 import readfile
@@ -16,6 +16,7 @@ if __name__ == "__main__":
     # Argparse and add arguments
     parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to Readme for full documentation and examples...")
     parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_false")
+    parser.add_argument("-btu", "--mmbtu", help="Display data in units of MMbtu rather than MMcf" action="store_false")
     options = parser.parse_args()
 
     # Get user creds
@@ -26,14 +27,14 @@ if __name__ == "__main__":
         username = input('Enter username: ')
         password = getpass.getpass('Enter password: ')
 
-    # Connect
+    # Connect to the database
     connection = access.connect(username, password)
 
-    # Get start date and pipeline id, and point names
+    # Get date range and pipeline id
     date_range = pointCap.getDateRange()
     pipeline_id = int(input("Enter pipeline id: "))
     
-    # Append to df_list\
+    # Get the names and location IDs for all interconnects
     location_data = access.getInterconnectIDs(connection, pipeline_id)
         
     # Raise error if no points are returned
@@ -42,22 +43,27 @@ if __name__ == "__main__":
     
     # Get capacity data for locations
     df_list = []
+    # Separate loc_ids and names from location data
     loc_ids, new_names = location_data[0], location_data[1]
     for loc, name in zip(loc_ids, new_names):
         try:
+            # Get cap data
             print("Getting data for {}...".format(name))
             df = access.getCapacityData(connection, date_range, pipeline_id, loc)
             # Check if point has receipts and deliveries
             df = pointCap.checkDF(df)
-            # Convert to MMcf/d
-            new_col = df["scheduled_cap"] / 1030
-            df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
-            df = df.drop(columns=["operational_cap"])  # Drop opcap
+            # Convert to MMcf unless option is true
+            if options.mmbtu is False:
+                df = df.assign(scheduled_cap = lambda x: x["scheduled_cap"] / 1030)
+            # Drop operational capacity column
+            df = df.drop(columns=["operational_cap"])
+            # Filter out zero noms and averages < threshold
             if max(df["scheduled_cap"].values) == 0:
                 continue
             elif (np.average(df["scheduled_cap"].values) <= 80 or np.average(df["scheduled_cap"].values) >= -80) and abs(max(df["scheduled_cap"].values)) < 100:
                 continue
             else:
+                # Else append to df_list
                 df_list.append(df)
 
         # Exception to handle errors
@@ -83,4 +89,5 @@ if __name__ == "__main__":
     # Concat dfs together and write to file
     pd.concat([df for df in df_list], axis=1).to_csv("saved_data/{0}".format(save_name), index=False)
 
+    # Final print
     print("Data has been saved to saved_data/{0} in the current folder...".format(save_name))

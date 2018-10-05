@@ -18,18 +18,20 @@ import readfile
 def getDateRange():
     # User inputs
     start = input("Enter starting date (MM-DD-YYYY). Enter nothing to query the last 30 days: ")
+
+    # If start is blank, query for last 30 days, else input an end date
     if not start:
         start = str((datetime.datetime.now() + datetime.timedelta(-30)).strftime("%m-%d-%Y"))
         end = str(datetime.datetime.now().strftime("%m-%d-%Y"))
     else:
         end = input("Enter end date (enter nothing for today): ")
-    # Troubleshoot (if end has no value)
+    # If end has no value, make it today
     if not end:
         end = str(datetime.datetime.now().strftime("%m-%d-%Y"))  # date in mm/dd/yyyy
     # Check date range
     if datetime.datetime.strptime(start, "%m-%d-%Y") > datetime.datetime.strptime(end, "%m-%d-%Y"):
-        print("quit")
-    # Return
+        raise ValueError("Start date is after the end date.")
+    # Return dates
     return [start, end]
 
 # Check df for receipt and delivery values
@@ -58,7 +60,7 @@ def checkDF(dataframe):
             else:
                 # Else use last opcap value
                 operational.append(operational[ind-1])
-        # Return filtered dataframe
+        # Return reduced dataframe
         return pd.DataFrame({"gas_day":dates, "scheduled_cap":scheduled, "operational_cap":operational})
     else:
         # Else return dataframe with no role id
@@ -66,15 +68,17 @@ def checkDF(dataframe):
 
 # Plot
 def plotPoints(df_list, opcap):
-    # Set font family
+    # Set font family to Calibri
     rcParams["font.family"] = "Calibri"
-    # Set title
+    # Input title
     title = input("Graph title: ")
-    # Set graph labels amd title
+    # Set graph labels (colors, font, rotation) amd title
     plt.title(title, fontsize=24, color="#595959")
     plt.ylabel("MMcf/d", fontsize=12, color="#595959")
     plt.xticks(fontsize=12, rotation=90, color="#595959")
     plt.yticks(fontsize=12, color="#595959")
+
+    # Check to display operational capacity
     if not opcap:
         types = ["Scheduled", "Operational"]
     else:
@@ -83,13 +87,15 @@ def plotPoints(df_list, opcap):
         for ind, datafile in enumerate(df_list):
             datafile = datafile.drop(["operational_cap"], axis=1)
             df_list[ind] = datafile
+
     # Get dates
-    dates = [d.strftime("%m/%d/%Y") for d in df_list[0]["gas_day"].values]  # ??
+    dates = [d.strftime("%m/%d/%Y") for d in df_list[0]["gas_day"].values]
 
     # Loop through dataframes and plot
     ax = plt.axes()
     for datafile in df_list:
         ax.plot(dates, datafile.iloc[:,1:])  # plot data vs dates
+        
     # Set legend, make it draggable, set color
     legend = plt.legend([point + " " + quant for point in point_names for quant in types], ncol=2, prop={"size":12}, frameon=False)
     legend.draggable()

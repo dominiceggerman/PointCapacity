@@ -4,6 +4,7 @@ import getpass
 import psycopg2
 import pandas as pd
 
+
 # Connect to database
 def connect(usr, pswrd):
     # Establish connection with username and password
@@ -11,9 +12,10 @@ def connect(usr, pswrd):
     print("Successfully connected to database...")
     return conn
 
+
 # Find location id's from names
 def getLocationIDs(conn, point, pipe_id):
-    # Create statement to select
+    # Create statement to select based on location ID
     try:
         point = int(point)
         statement = """SELECT DISTINCT loc.name, loc.id
@@ -23,6 +25,7 @@ def getLocationIDs(conn, point, pipe_id):
                         ORDER BY loc.name;
                     """.format(point, pipe_id)
         print("Querying database for points matching id = {0}".format(point))
+    # Statement based on string name
     except ValueError:
         statement = """SELECT DISTINCT loc.name, loc.id
                         FROM maintenance.location AS loc
@@ -31,7 +34,7 @@ def getLocationIDs(conn, point, pipe_id):
                         ORDER BY loc.name;
                     """.format("'%"+point+"%'", pipe_id)
         print("Querying database for points matching name ILIKE '%{0}%'...".format(point))
-    # Read to dataframe
+    # Read to dataframe and get point names and loc_ids
     df = pd.read_sql(statement, conn)
     points = df["name"].values
     loc_ids = df["id"].values
@@ -60,7 +63,7 @@ def getInterconnectIDs(conn, pipe_id):
                     ORDER BY loc.name;
                 """.format(pipe_id)
     print("Querying database for interconnects on pipe_id: {0}...".format(pipe_id))
-    # Read to dataframe
+    # Read to dataframe and get point names and loc_ids    
     df = pd.read_sql(statement, conn)
     points = df["name"].values
     loc_ids = df["id"].values
@@ -72,6 +75,7 @@ def getInterconnectIDs(conn, pipe_id):
     else:
         # Get all the points
         return [loc_ids, points]
+
 
 # Query scheduled and operational caps for date range
 def getCapacityData(conn, dates, pipe_id, location_id):
@@ -91,7 +95,7 @@ def getCapacityData(conn, dates, pipe_id, location_id):
     df = pd.read_sql(statement, conn)
     return df
 
-# Run
+# Test run
 if __name__ == "__main__":
     # User entries
     username = input('Enter username: ')
