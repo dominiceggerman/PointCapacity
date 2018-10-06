@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # Argparse and add arguments
     parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to Readme for full documentation and examples...")
     parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_false")
-    parser.add_argument("-btu", "--mmbtu", help="Display data in units of MMbtu rather than MMcf" action="store_false")
+    parser.add_argument("-btu", "--mmbtu", help="Display data in units of MMbtu rather than MMcf", action="store_false")
     options = parser.parse_args()
 
     # Get user creds
