@@ -57,3 +57,29 @@ Example use: `python pointCap.py -l -o`.  This will use the query stored in `que
 - Point names are the list of points / a point that you want to graph nominations for.  Multiple points can be comma separated: `point_names: wagoner east,wagoner west,ramapo AGT`.  You can also use location ID's.
 
 String names will be searched for using an ILIKE '%XXXXX%' SQL query (or id = XXXXX if you entered a location id), so entering "Wagoner", will search for locations with with strings that match that entry.  You can select one or multiple of the entries once the command has run.
+
+### Rundown of functions
+
+- Functions in `pointCap`
+    - `getDateRange()` asks the user to input a start and end date.  Entering nothing will create a range from today to the date 30 days ago.
+    - `checkDF(dataframe)` Subtracts deliveries from receipts if a location has both roles.
+        - `dataframe` is an individual dataframe.
+    - `plotPoints(df_list, opcap)` plots nominations data for all of the points in df_list.
+        - `df_list` is the list of pandas dataframes containing nominations data, one for each location.
+        - `opcap` is a boolean which will keep / drop the operational capcity column.
+- Functions in `accessDB`
+    - `connect(usr, pswrd)` connects to the insightprod database.  Returns that connection to be used by other functions.
+        - `usr` is a username.
+        - `pswrd` is a password.
+    - `getLocationIDs(conn, point, pipe_id)` obtains the location IDs of points by matching them on a name.  Returns the database name and the location ID.  The additonal index in the returned list handles multiple points matching the same name string.
+        - `conn` is the connection to the database.
+        - `point` is the name (string) of a location.
+        - `pipe_id` is the ID of the pipeline.
+    - `getInterconnectIDs(conn, pipe_id)` obtains and returns the all of the location IDs that match interconnects (intra / inter) on a particular pipeline.
+        - `conn` is the connection to the database.
+        - `pipe_id` is the ID of the pipeline.
+    - `getCapacityData(conn, dates, pipe_id, location_id)` obtains nominations data for a particular point and returns a dataframe with the columns [date, scheduled, operational, role_id].
+        - `conn` is the connection to the database.
+        - `dates` is the range of dates to get nominations data for.
+        - `pipe_id` is the ID of the pipeline.
+        - `location_id` is the numeric ID of the location.

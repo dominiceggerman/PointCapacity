@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import datetime
 import argparse
-# Import PointCap modules
+# Import pointCap modules
 import pointCap
 import accessDB as access
 import readfile

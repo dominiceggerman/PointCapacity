@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import datetime
 import argparse
-# Import pointcap modules
+# Import pointCap modules
 import pointCap
 import accessDB as access
 import readfile 
@@ -71,8 +71,9 @@ if __name__ == "__main__":
                     another_point = False
 
             # Raise error if returned no points
-            if location_data == -1:
-                raise(psycopg2.Error)
+            if None in location_data:
+                print("Could not find that point in the database...")
+                continue
             loc_id, new_name = location_data[0], location_data[1]
             point_names[ind] = new_name
             # Get point capacity data

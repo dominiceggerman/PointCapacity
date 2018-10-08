@@ -176,7 +176,7 @@ if __name__ == "__main__":
             # Raise error if no points are returned
             if None in location_data:
                 print("Could not find that point in the database...")
-                raise(psycopg2.Error)
+                continue
             loc_id, new_name = location_data[0], location_data[1]
             point_names[ind] = new_name
             # Get point capacity data
