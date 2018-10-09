@@ -53,8 +53,12 @@ if __name__ == "__main__":
                     # Remove leading space from point name string
                     point_names[ind] = point[1:]
         
-        # Get point averages
-        point_list = []
+        # Final list of point names
+        final_point_names = []
+        # List of location ID's
+        loc_id_list = []
+
+        # First loop to get all of the point names and loc_ids. This also enables in-query addition of new points
         for ind, p in enumerate(point_names):
             # Set marker for multiple points
             another_point = True
@@ -62,20 +66,28 @@ if __name__ == "__main__":
             while another_point:
                 # Get location id and true name
                 location_data = access.getLocationIDs(connection, p, pipeline_id)
-                if location_data[2] is True:
+                # Raise error if returned no points
+                if None in location_data:
+                    print("Could not find that point in the database...")
+                    continue
+                elif location_data[2] is True:
+                    # Add to location name and ID
+                    loc_id_list.append(location_data[0])
+                    final_point_names.append(location_data[1])
                     # Ask user if he/she wants to pick another point from the query
                     more_points = input("Want to add another point from this list? (y/n): ")
                     if more_points not in ["y", "yes"]:
                         another_point = False
                 else:
+                    loc_id_list.append(location_data[0])
+                    final_point_names.append(location_data[1])
                     another_point = False
+        
+        # List for point data
+        point_data = []
 
-            # Raise error if returned no points
-            if None in location_data:
-                print("Could not find that point in the database...")
-                continue
-            loc_id, new_name = location_data[0], location_data[1]
-            point_names[ind] = new_name
+        # Second loop to get data
+        for ind, (point_name, loc_id) in enumerate(zip(final_point_names, loc_id_list)):
             # Get point capacity data
             df = access.getCapacityData(connection, date_range, pipeline_id, loc_id)
             # Check if point has receipts and deliveries
@@ -90,23 +102,23 @@ if __name__ == "__main__":
             #q25, q75 = round(np.percentile(flows, 25), 2), round(np.percentile(flows, 75), 2)  # Calculate first and third quartile
             #iqr = round(q75 - q25, 2)  # Calculate interquartile range
             # Append print statement to list
-            point_list.append({"name":new_name, "day_diff":day_diff, "flow_avg":point_avg, "flow_median":point_median, "opcap":opcap, "flow_max":point_max, "flow_min":point_min})
+            point_data.append({"name":point_name, "day_diff":day_diff, "flow_avg":point_avg, "flow_median":point_median, "opcap":opcap, "flow_max":point_max, "flow_min":point_min})
 
         # Close connection
         print("Closing connection to database...")
         connection.close()
 
-        # Print point_list
+        # Print point_data
         if options.mmcf:
             print("\nCalculated Flows (MMcf/d):")
         else:
             print("\nCalculated Flows (MMbtu/d):")
-        for p in point_list:
+        for p in point_data:
             if options.mmcf:
-                print("Point name: {0} | Opcap Max: {1} | Average {2}-day Flow: {3} | Median: {4} | Min Flow: {5} | Max Flow: {6}"
+                print("Point name: {0} || Opcap Max: {1} | Average {2}-day Flow: {3} | Median: {4} || Min Flow: {5} | Max Flow: {6}"
                 .format(p["name"], p["opcap"]/1030, p["day_diff"].days, p["flow_avg"]/1030, p["flow_median"]/1030, p["flow_min"]/1030, p["flow_max"]/1030))
             else:
-                print("Point name: {0} | Opcap Max: {1} | Average {2}-day Flow: {3} | Median: {4} | Min Flow: {5} | Max Flow: {6}"
+                print("Point name: {0} || Opcap Max: {1} | Average {2}-day Flow: {3} | Median: {4} || Min Flow: {5} | Max Flow: {6}"
                 .format(p["name"], p["opcap"], p["day_diff"].days, p["flow_avg"], p["flow_median"], p["flow_min"], p["flow_max"]))
     
     # Exception to handle errors

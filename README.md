@@ -49,7 +49,7 @@ Example use: `python pointCap.py -l -o`.  This will use the query stored in `que
 | `-c` | `--creds` | Uses the login credentials stored in `creds.txt` | True |
 | `-btu` | `--mmbtu` | Display data in units of MMbtu rather than MMcf | False |
 
-### Using saved queries and query.txt
+### Using Saved Queries and query.txt
 
 - Start date is coded as MM-DD-YYYY.
 - End date can be a date or "today", which will generate the current date.
@@ -58,7 +58,7 @@ Example use: `python pointCap.py -l -o`.  This will use the query stored in `que
 
 String names will be searched for using an ILIKE '%XXXXX%' SQL query (or id = XXXXX if you entered a location id), so entering "Wagoner", will search for locations with with strings that match that entry.  You can select one or multiple of the entries once the command has run.
 
-### Rundown of functions
+### Rundown of Functions
 
 - Functions in `pointCap`
     - `getDateRange()` asks the user to input a start and end date.  Entering nothing will create a range from today to the date 30 days ago.
