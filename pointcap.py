@@ -67,7 +67,7 @@ def checkDF(dataframe):
         return dataframe.drop(columns="role_id")
 
 # Plot
-def plotPoints(df_list, opcap):
+def plotPoints(df_list, loc_names, opcap):
     # Set font family to Calibri
     rcParams["font.family"] = "Calibri"
     # Input title
@@ -97,7 +97,7 @@ def plotPoints(df_list, opcap):
         ax.plot(dates, datafile.iloc[:,1:])  # plot data vs dates
         
     # Set legend, make it draggable, set color
-    legend = plt.legend([point + " " + quant for point in point_names for quant in types], ncol=2, prop={"size":12}, frameon=False)
+    legend = plt.legend([point + " " + quant for point in loc_names for quant in types], ncol=2, prop={"size":12}, frameon=False)
     legend.draggable()
     plt.setp([text for text in legend.get_texts()], color="#595959")
     
@@ -156,29 +156,42 @@ if __name__ == "__main__":
                 if point[0] == " ":
                     # Remove leading space from point name string
                     point_names[ind] = point[1:]
-        
-        # Append to df_list
-        df_list = []
+
+        # Final list of point names
+        final_point_names = []
+        # List of location ID's
+        loc_id_list = []
+
+        # First loop to get all of the point names and loc_ids. This also enables in-query addition of new points
         for ind, p in enumerate(point_names):
             # Set marker for multiple points
             another_point = True
+            # Get location id and true name
             while another_point:
                 # Get location id and true name
                 location_data = access.getLocationIDs(connection, p, pipeline_id)
-                if location_data[2] is True:
+                # Raise error if returned no points
+                if None in location_data:
+                    print("Could not find that point in the database...")
+                    continue
+                elif location_data[2] is True:
+                    # Add to location name and ID
+                    loc_id_list.append(location_data[0])
+                    final_point_names.append(location_data[1])
                     # Ask user if he/she wants to pick another point from the query
                     more_points = input("Want to add another point from this list? (y/n): ")
                     if more_points not in ["y", "yes"]:
                         another_point = False
                 else:
+                    loc_id_list.append(location_data[0])
+                    final_point_names.append(location_data[1])
                     another_point = False
-            
-            # Raise error if no points are returned
-            if None in location_data:
-                print("Could not find that point in the database...")
-                continue
-            loc_id, new_name = location_data[0], location_data[1]
-            point_names[ind] = new_name
+
+        # Master df_list
+        df_list = []
+
+        # Second loop to get data
+        for loc_id in loc_id_list:
             # Get point capacity data
             df = access.getCapacityData(connection, date_range, pipeline_id, loc_id)
             # Check if point has receipts and deliveries
@@ -201,7 +214,7 @@ if __name__ == "__main__":
     # Graph
     try:
         print("Graphing points...")
-        plotPoints(df_list, options.opcap)
+        plotPoints(df_list, final_point_names, options.opcap)
     # Exception to handle errors
     except:
         print("Error encountered during graphing...")
@@ -213,7 +226,7 @@ if __name__ == "__main__":
             if os.path.exists("query.txt"):
                 os.remove("query.txt")
             with open("query.txt", mode="w") as savefile:
-                save_query = "start_date: {0}\nend_date: {1}\npipeline_id: {2}\npoint_names: {3}".format(date_range[0], date_range[1], pipeline_id, ",".join(point_names))
+                save_query = "start_date: {0}\nend_date: {1}\npipeline_id: {2}\npoint_names: {3}".format(date_range[0], date_range[1], pipeline_id, ",".join(final_point_names))
                 savefile.write(save_query)
         else:
             print("Discarding query...")
@@ -225,7 +238,7 @@ if __name__ == "__main__":
         if save_name[-4:] != ".csv":
             save_name = save_name + ".csv"
         # Get all data to master df
-        for ind, (df, name) in enumerate(zip(df_list, point_names)):
+        for ind, (df, name) in enumerate(zip(df_list, final_point_names)):
             if ind == 0:
                 df_list[ind] = df.rename(index=str, columns={"gas_day":"Gas Day", "scheduled_cap":"{0} Scheduled".format(name)})
             else:

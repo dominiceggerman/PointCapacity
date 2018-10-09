@@ -64,8 +64,9 @@ String names will be searched for using an ILIKE '%XXXXX%' SQL query (or id = XX
     - `getDateRange()` asks the user to input a start and end date.  Entering nothing will create a range from today to the date 30 days ago.
     - `checkDF(dataframe)` Subtracts deliveries from receipts if a location has both roles.
         - `dataframe` is an individual dataframe.
-    - `plotPoints(df_list, opcap)` plots nominations data for all of the points in df_list.
+    - `plotPoints(df_list, loc_names, opcap)` plots nominations data for all of the points in df_list.
         - `df_list` is the list of pandas dataframes containing nominations data, one for each location.
+        - `loc_names` is the list of location names.
         - `opcap` is a boolean which will keep / drop the operational capcity column.
 - Functions in `accessDB`
     - `connect(usr, pswrd)` connects to the insightprod database.  Returns that connection to be used by other functions.
