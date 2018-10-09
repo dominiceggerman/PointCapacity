@@ -249,6 +249,10 @@ if __name__ == "__main__":
         pd.concat([df for df in df_list], axis=1).to_csv("saved_data/{0}".format(save_name), index=False)
 
         print("Data has been saved to saved_data/{0} in the current folder...".format(save_name))
+
+        # Get abs path and open the file
+        abs_path = os.path.abspath("saved_data/{0}".format(save_name))
+        os.startfile(abs_path)
     
     else:
         print("Data discarded...")
