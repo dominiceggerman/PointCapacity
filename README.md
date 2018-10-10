@@ -51,6 +51,16 @@ Example use: `python pointCap.py -l -o`.  This will use the query stored in `que
 
 ### Using Saved Queries and query.txt
 
+Example `query.txt` file:
+
+```
+start_date: 09-09-2018
+end_date: 10-09-2018
+pipeline_id: 407
+point_names: ANACONDA SS207 (992203),MANTA RAY @ SS207 A (992200),MANTA RAY @ SS207 B (992202)
+
+```
+
 - Start date is coded as MM-DD-YYYY.
 - End date can be a date or "today", which will generate the current date.
 - Pipeline ID is the id of a particular pipeline.
