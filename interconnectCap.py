@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # Argparse and add arguments
     parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to Readme for full documentation and examples...")
     parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_false")
-    parser.add_argument("-btu", "--mmbtu", help="Display data in units of MMbtu rather than MMcf", action="store_false")
+    parser.add_argument("-btu", "--mmbtu", help="Display data in units of MMbtu rather than MMcf", action="store_true")
     options = parser.parse_args()
 
     # Get user creds
@@ -33,6 +33,13 @@ if __name__ == "__main__":
     # Get date range and pipeline id
     date_range = pointCap.getDateRange()
     pipeline_id = int(input("Enter pipeline id: "))
+    # Get flow average and max filters
+    if options.mmbtu is False:
+        avg_filter = int(input("Enter an integer (unit of MMcf) for which flows averaging below this will be filtered out (Ex: 80): "))
+        max_filter = int(input("Enter an integer (unit of MMcf) for which flows with max below this value will be filtered out (Ex: 100): "))
+    else:
+        avg_filter = int(input("Enter an integer (unit of MMbtu) for which flows averaging below this will be filtered out (Ex: 50000): "))
+        max_filter = int(input("Enter an integer (unit of MMbtu) for which flows with max below this value will be filtered out (Ex: 80000): "))
     
     # Get the names and location IDs for all interconnects
     location_data = access.getInterconnectIDs(connection, pipeline_id)
@@ -60,7 +67,7 @@ if __name__ == "__main__":
             # Filter out zero noms and averages < threshold
             if max(df["scheduled_cap"].values) == 0:
                 continue
-            elif (np.average(df["scheduled_cap"].values) <= 80 or np.average(df["scheduled_cap"].values) >= -80) and abs(max(df["scheduled_cap"].values)) < 100:
+            elif (np.average(df["scheduled_cap"].values) <= avg_filter or np.average(df["scheduled_cap"].values) >= -avg_filter) and abs(max(df["scheduled_cap"].values)) < max_filter:
                 continue
             else:
                 # Else append to df_list
@@ -91,3 +98,7 @@ if __name__ == "__main__":
 
     # Final print
     print("Data has been saved to saved_data/{0} in the current folder...".format(save_name))
+
+    # Get abs path and open the file
+    abs_path = os.path.abspath("saved_data/{0}".format(save_name))
+    os.startfile(abs_path)
