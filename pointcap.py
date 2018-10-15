@@ -122,6 +122,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_false")
     parser.add_argument("-l", "--last", help="Use last query", action="store_true")
     parser.add_argument("-o", "--opcap", help="Remove operational cap datapoints", action="store_true")
+    parser.add_argument("-g", "--graph", help="Do not display graph.", action="store_false")
     options = parser.parse_args()
 
     # Get user creds
@@ -212,12 +213,15 @@ if __name__ == "__main__":
         connection.close()
 
     # Graph
-    try:
-        print("Graphing points...")
-        plotPoints(df_list, final_point_names, options.opcap)
-    # Exception to handle errors
-    except:
-        print("Error encountered during graphing...")
+    if options.graph:
+        try:
+            print("Graphing points...")
+            plotPoints(df_list, final_point_names, options.opcap)
+        # Exception to handle errors
+        except:
+            print("Error encountered during graphing...")
+    else:
+        print("Skipping graphing...")
 
     # Save the query
     if not options.last:

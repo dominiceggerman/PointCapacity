@@ -4,7 +4,7 @@
 
 *By Dominic Eggerman*
 
-`PointCapacity` is a program which will access Genscape's insightprod database and obtain nominations for user-selected points.
+`PointCapacity` is a program which will access Genscape's insightprod database and obtain nominations data for user-selected points.
 The program can be launched from the command line.
 
 ### How To - `pointCap`
@@ -25,6 +25,7 @@ password: YYYYY
 | `-c` | `--creds` | Uses the login credentials stored in `creds.txt` | True |
 | `-l` | `--last` | Uses the last query stored in `query.txt` | False |
 | `-o` | `--opcap` | Does not graph the operational capacity of a point | False |
+| `-g` | `--graph` | Skips graphing | False |
 
 Note that "Default" is the value that is used if *the option is not specified*
 
