@@ -69,6 +69,7 @@ if __name__ == "__main__":
                 # Raise error if returned no points
                 if None in location_data:
                     print("Could not find that point in the database...")
+                    another_point = False
                     continue
                 elif location_data[2] is True:
                     # Add to location name and ID
