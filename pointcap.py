@@ -32,8 +32,13 @@ def getDateRange():
     # Check date range
     if datetime.datetime.strptime(start, "%m-%d-%Y") > datetime.datetime.strptime(end, "%m-%d-%Y"):
         raise ValueError("Start date is after the end date.")
+
+    # Check date range
+    if end < start:
+        raise ValueError("Start date is after end date.")
     # Return dates
-    return [start, end]
+    else:
+        return [start, end]
 
 
 # Check df for receipt and delivery values
