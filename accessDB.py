@@ -48,7 +48,9 @@ def getLocationIDs(conn, point, pipe_id):
     else:
         # Select from multiple points
         point_select = ["{0}: {1}".format(ind+1,p) for ind, p in enumerate(points)]
-        print(point_select)
+        print("\nMultiple points found:")
+        for p in point_select:
+            print(p)
         choice = int(input("Select a point from the list by entering the corresponding number: "))
         return [loc_ids[choice-1], points[choice-1], True]
 
