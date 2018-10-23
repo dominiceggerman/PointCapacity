@@ -35,9 +35,10 @@ def getLocationIDs(conn, point, pipe_id):
                     """.format("'%"+point+"%'", pipe_id)
         print("Querying database for points matching name ILIKE '%{0}%'...".format(point))
     # Read to dataframe and get point names and loc_ids
-    df = pd.read_sql(statement, conn)
-    points = df["name"].values
-    loc_ids = df["id"].values
+    finally:
+        df = pd.read_sql(statement, conn)
+        points = df["name"].values
+        loc_ids = df["id"].values
 
     # Decisions to return loc_id and name
     if len(points) == 0:
@@ -96,6 +97,7 @@ def getCapacityData(conn, dates, pipe_id, location_id):
     print("Querying database for pointcap data...")
     df = pd.read_sql(statement, conn)
     return df
+
 
 # Test run
 if __name__ == "__main__":

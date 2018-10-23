@@ -12,7 +12,7 @@ import pointCap
 import accessDB as access
 import readfile 
 
-# Run
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to Readme for full documentation and examples...")
     parser.add_argument("-c", "--creds", help="Access creds from creds.txt", action="store_true")

@@ -14,6 +14,7 @@ import argparse
 import accessDB as access
 import readfile
 
+
 # Get user input date range
 def getDateRange():
     # User inputs
@@ -33,6 +34,7 @@ def getDateRange():
         raise ValueError("Start date is after the end date.")
     # Return dates
     return [start, end]
+
 
 # Check df for receipt and delivery values
 def checkDF(dataframe):
@@ -65,6 +67,7 @@ def checkDF(dataframe):
     else:
         # Else return dataframe with no role id
         return dataframe.drop(columns="role_id")
+
 
 # Plot
 def plotPoints(df_list, loc_names, opcap):
@@ -115,7 +118,6 @@ def plotPoints(df_list, loc_names, opcap):
     plt.show()
     
 
-# Run
 if __name__ == "__main__":
     # Argparse and add arguments
     parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to README.md for full documentation and examples...")

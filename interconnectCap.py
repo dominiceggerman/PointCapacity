@@ -12,6 +12,7 @@ import pointCap
 import accessDB as access
 import readfile
 
+
 if __name__ == "__main__":
     # Argparse and add arguments
     parser = argparse.ArgumentParser(description="Below is a list of optional arguements with descriptions. Please refer to Readme for full documentation and examples...")
